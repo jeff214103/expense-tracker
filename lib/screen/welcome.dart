@@ -6,25 +6,33 @@ List<Map<String, dynamic>> items = [
     "id": 1,
     "header": "Welcome",
     "description":
-        "Welcome to your personal expense management app. This platform helps you track and manage your daily expenses efficiently.",
-    "image": "assets/images/1.png"
+        """Welcome to your expense management app. Track your daily expenses efficiently. 
+Add this app to your home screen by following these steps:""",
+    "image": "assets/images/1.png",
+    "link": [
+      {
+        "name": "How to add this app to your home screen",
+        "url":
+            "https://www.howtogeek.com/196087/how-to-add-websites-to-the-home-screen-on-any-smartphone-or-tablet/"
+      }
+    ],
   },
   {
     "id": 2,
     "header": "Privacy",
     "description":
-        """Your data privacy is important. Here's where your information is stored:
+        """Your data privacy matters. Here's where your information is stored:
 
         1. Google Drive - Receipt images
         2. Google Sheets - Expense records
         3. Local device - App settings
 
-        Please note: You are responsible for managing your device and Google account security settings. The app developer cannot be held responsible for any data breaches resulting from your security configurations.""",
+        Note: You are responsible for your device and Google account security. The app developer is not liable for any data breaches due to your security settings.""",
     "image": "assets/images/2.png",
     "link": [
       {
         "name": "privacy policy",
-        "url":  Uri.parse('/privacy-policy').toString(),
+        "url": Uri.parse('/privacy-policy').toString(),
       },
     ]
   },
@@ -32,33 +40,32 @@ List<Map<String, dynamic>> items = [
     "id": 3,
     "header": "Input",
     "description":
-        """Getting started is easy! Simply scan your receipt, and if you've configured Gemini, the information will be automatically extracted and populated in the form. You can review and adjust the details as needed. 
+        """Getting started is easy! Scan your receipt, and if you've set up Gemini, the information will be extracted automatically. You can review and adjust the details as needed. 
         
-        Don't have a receipt? No problem - you can manually input expenses too.""",
+        No receipt? You can also input expenses manually.""",
     "image": "assets/images/3.png"
   },
   {
     "id": 4,
     "header": "View",
     "description":
-        "Track your spending history with ease. All amounts are displayed in your preferred currency. Please note that currency conversion rates are preset and may need manual updates to reflect current rates.",
+        "Easily track your spending history. All amounts are shown in your preferred currency. Currency conversion rates are preset and may need manual updates.",
     "image": "assets/images/4.png"
   },
   {
     "id": 5,
     "header": "Manage",
     "description":
-        """The app helps you to create a Google Sheet named "Expense Record" and a Google Drive folder named "Expense History (Automated)".  You may find those files in your Google Drive. If your Google Drive runs out of space, you may remove the files manually.""",
+        """The app creates a Google Sheet named "Expense Record" and a Google Drive folder called "Expense History (Automated)". You can find these files in your Google Drive. If you run out of space, you may need to delete them manually.""",
     "image": "assets/images/4.png"
   },
   {
     "id": 6,
     "header": "Author",
     "description":
-        "This project is open source and available on GitHub. Contributions are welcome! If you find this app helpful, consider supporting the developer with a coffee!",
+        "This project is open source on GitHub. Contributions are welcome! If you find this app helpful, consider supporting the developer with a coffee!",
     "image": "assets/images/6.png",
     "link": [
-       
       {
         "name": "github",
         "url": "https://github.com/jeff214103/resume-generator",

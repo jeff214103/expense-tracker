@@ -171,7 +171,7 @@ class _SettingScreenState extends State<SettingScreen>
     String currentModel,
     Function(String) onModelSelect,
   ) {
-    final models = ['gemini-1.5-flash', 'gemini-1.5-proa'];
+    final models = ['gemini-1.5-flash', 'gemini-1.5-pro'];
 
     showDialog(
       context: context,
