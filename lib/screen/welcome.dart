@@ -20,7 +20,13 @@ List<Map<String, dynamic>> items = [
         3. Local device - App settings
 
         Please note: You are responsible for managing your device and Google account security settings. The app developer cannot be held responsible for any data breaches resulting from your security configurations.""",
-    "image": "assets/images/2.png"
+    "image": "assets/images/2.png",
+    "link": [
+      {
+        "name": "privacy policy",
+        "url":  Uri.parse('/privacy-policy').toString(),
+      },
+    ]
   },
   {
     "id": 3,
@@ -52,6 +58,7 @@ List<Map<String, dynamic>> items = [
         "This project is open source and available on GitHub. Contributions are welcome! If you find this app helpful, consider supporting the developer with a coffee!",
     "image": "assets/images/6.png",
     "link": [
+       
       {
         "name": "github",
         "url": "https://github.com/jeff214103/resume-generator",

@@ -1,6 +1,7 @@
 import 'package:expense_tracker_web/models/expense_record.dart';
 import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:expense_tracker_web/screen/expense_list.dart';
+import 'package:expense_tracker_web/screen/signin.dart';
 import 'package:expense_tracker_web/screen/welcome.dart';
 import 'package:expense_tracker_web/widgets/loading_hint.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/screen/setting.dart';
 import 'package:provider/provider.dart';
+import 'package:expense_tracker_web/util/google_sign_in.dart';
 
 void _redirectTo(BuildContext context, Widget widget,
     {void Function(dynamic)? callback}) {
@@ -152,6 +154,19 @@ class _HomePageState extends State<HomePage>
             );
           },
           icon: const Icon(Icons.help),
+        ),
+        IconButton(
+          tooltip: 'Logout',
+          onPressed: () async {
+            // Sign out the user
+            GoogleSignInHelper.signOut().then((GoogleSignInAccount? account) {
+              // Navigate back to the login screen
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const GoogleSignInPage()),
+                  (Route<dynamic> route) => false);
+            });
+          },
+          icon: const Icon(Icons.logout),
         ),
       ],
       child: Column(

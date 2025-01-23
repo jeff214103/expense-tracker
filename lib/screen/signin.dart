@@ -19,14 +19,12 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
     GoogleSignInHelper.googleSignIn.onCurrentUserChanged.listen(
         (GoogleSignInAccount? account) {
       if (account == null) {
-        throw Exception('User is not logged in');
+        return;
       }
       GoogleSignInHelper.setAccount(account);
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => HomePage(account: account),
-        ),
-      );
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomePage(account: account)),
+          (Route<dynamic> route) => false);
     }, onError: (error) {
       print('Error during user change: $error');
       ScaffoldMessenger.of(context).showSnackBar(

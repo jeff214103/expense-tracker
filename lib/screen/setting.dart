@@ -12,7 +12,8 @@ class SettingScreen extends StatefulWidget {
   _SettingScreenState createState() => _SettingScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen> with SingleTickerProviderStateMixin {
+class _SettingScreenState extends State<SettingScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _isLoading = false;
 
@@ -58,7 +59,8 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Update $title', style: Theme.of(context).textTheme.titleMedium),
+        title: Text('Update $title',
+            style: Theme.of(context).textTheme.titleMedium),
         content: Form(
           key: formKey,
           child: Column(
@@ -66,7 +68,8 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
             children: [
               TextFormField(
                 controller: controller,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: title,
                   border: const OutlineInputBorder(),
@@ -214,7 +217,7 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                   const SizedBox(height: 16),
                   _buildAIAssistanceCard(context, settings),
                   if (settings.currency != null && widget.isFirstTime)
-                    _buildGetStartedButton(context),
+                    _buildGetStartedButton(context),           
                 ],
               ),
             ),
@@ -228,7 +231,8 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
     );
   }
 
-  Card _buildGeneralSettingsCard(BuildContext context, SettingProvider settings) {
+  Card _buildGeneralSettingsCard(
+      BuildContext context, SettingProvider settings) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -280,7 +284,8 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
               onTap: () => _showNumberInputDialog(
                 context: context,
                 title: 'Income',
-                hintText: 'Your monthly income. It will only store on your device, not used anywhere else.',
+                hintText:
+                    'Your monthly income. It will only store on your device, not used anywhere else.',
                 currentValue: settings.income,
                 onSave: (value) => settings.updateIncome(value),
               ),
@@ -294,7 +299,8 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
               onTap: () => _showNumberInputDialog(
                 context: context,
                 title: 'Regular Cost',
-                hintText: 'Your monthly cost that deducted from your income. It will only store on your device, not used anywhere else.',
+                hintText:
+                    'Your monthly cost that deducted from your income. It will only store on your device, not used anywhere else.',
                 currentValue: settings.regularCost,
                 onSave: (value) => settings.updateRegularCost(value),
               ),
@@ -364,7 +370,9 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
             _buildSettingListTile(
               context,
               title: 'Gemini Model',
-              subtitle: settings.geminiModel.isEmpty ? 'Not set' : settings.geminiModel,
+              subtitle: settings.geminiModel.isEmpty
+                  ? 'Not set'
+                  : settings.geminiModel,
               description: 'Select the AI model for assistance',
               onTap: () => _showModelSelectionDialog(
                 context,
