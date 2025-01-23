@@ -14,7 +14,8 @@ class ExpenseList extends StatefulWidget {
   State<ExpenseList> createState() => _ExpenseListState();
 }
 
-class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStateMixin {
+class _ExpenseListState extends State<ExpenseList>
+    with SingleTickerProviderStateMixin {
   String? selectedSheet;
   List<String> sheetsNames = [];
   List<ExpenseRecord>? expenseData;
@@ -23,10 +24,10 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
   bool isLoading = false;
   String? selectedCurrency;
   Map<String, int> currencyFrequency = {};
-  
+
   // Error handling
   String? errorMessage;
-  
+
   // Performance & Accessibility
   late AnimationController _animationController;
   final ScrollController _scrollController = ScrollController();
@@ -38,8 +39,9 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    
-    final settingProvider = Provider.of<SettingProvider>(context, listen: false);
+
+    final settingProvider =
+        Provider.of<SettingProvider>(context, listen: false);
     selectedCurrency = settingProvider.currency;
     _loadSheets();
   }
@@ -56,7 +58,7 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
       isLoading = true;
       errorMessage = null;
     });
-    
+
     try {
       final sheets = await GoogleSheetHelper.getSpreadsheets();
       if (sheets.isNotEmpty) {
@@ -81,7 +83,7 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
       isLoading = true;
       errorMessage = null;
     });
-    
+
     try {
       final data = await GoogleSheetHelper.getSheetData(sheetTitle);
       setState(() {
@@ -102,7 +104,7 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
     categorySums.clear();
     totalExpense = 0;
     currencyFrequency.clear();
-    
+
     if (expenseData == null || expenseData!.isEmpty) {
       setState(() => errorMessage = 'No expense records found');
       return;
@@ -125,9 +127,12 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
       double amount;
       String sourceCurrency;
 
-      if (record.finalAmount.isNotEmpty && record.finalAmount != record.amount) {
+      if (record.finalAmount.isNotEmpty &&
+          record.finalAmount != record.amount) {
         amount = double.tryParse(record.finalAmount) ?? 0;
-        sourceCurrency = Provider.of<SettingProvider>(context, listen: false).currency ?? "USD";
+        sourceCurrency =
+            Provider.of<SettingProvider>(context, listen: false).currency ??
+                "USD";
       } else {
         amount = double.tryParse(record.amount) ?? 0;
         sourceCurrency = record.currency.trim();
@@ -160,45 +165,29 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
         ? Semantics(
             label: 'Error notification',
             hint: 'An error occurred while loading data',
-            child: AnimatedBuilder(
-              animation: _animationController,
-              builder: (context, child) {
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, -1),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: _animationController,
-                      curve: Curves.easeInOut,
+            child: Container(
+              width: double.infinity,
+              color: Colors.red.shade100,
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      errorMessage!,
+                      style: const TextStyle(color: Colors.red),
                     ),
                   ),
-                  child: Container(
-                    width: double.infinity,
-                    color: Colors.red.shade100,
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.error_outline, color: Colors.red),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            errorMessage!,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.red),
-                          onPressed: () {
-                            _animationController.reverse();
-                            setState(() => errorMessage = null);
-                          },
-                        ),
-                      ],
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    onPressed: () {
+                      _animationController.reverse();
+                      setState(() => errorMessage = null);
+                    },
                   ),
-                );
-              },
+                ],
+              ),
             ),
           )
         : const SizedBox.shrink();
@@ -214,13 +203,11 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
       child: Column(
         children: [
           _buildErrorNotification(),
-          
           if (isLoading)
             const LinearProgressIndicator(
               backgroundColor: Colors.transparent,
               valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
             ),
-          
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -286,7 +273,7 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
 
   Widget _buildCategoryList() {
     final isMobileScreen = MediaQuery.of(context).size.width < 768;
-    
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -306,9 +293,9 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
             child: Text(
               '${entry.value.toStringAsFixed(2)} $selectedCurrency',
               style: TextStyle(
-                color: entry.value > 0 
-                  ? Colors.red.shade700 
-                  : Colors.green.shade700,
+                color: entry.value > 0
+                    ? Colors.red.shade700
+                    : Colors.green.shade700,
               ),
               overflow: TextOverflow.ellipsis,
             ),
