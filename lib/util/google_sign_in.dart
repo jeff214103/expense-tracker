@@ -1,7 +1,7 @@
 import 'package:expense_tracker_web/util/google_credentials.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:googleapis/sheets/v4.dart' as sheets;
+// import 'package:googleapis/sheets/v4.dart' as sheets;
 
 
 
@@ -9,7 +9,6 @@ class GoogleSignInHelper {
   static final List<String> scopes = [
     'email',
     drive.DriveApi.driveFileScope,
-    sheets.SheetsApi.spreadsheetsScope,
   ];
 
   static final GoogleSignIn googleSignIn =

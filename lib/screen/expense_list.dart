@@ -500,7 +500,7 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
           ),
           subtitle: Row(
             children: [
-              Expanded(
+              Flexible(
                 child: Text(
                   record.category,
                   style: TextStyle(
@@ -510,7 +510,7 @@ class _ExpenseListState extends State<ExpenseList> with SingleTickerProviderStat
                 ),
               ),
               Text(
-                DateFormat('d MMM y').format(record.invoiceDate),
+                " (${DateFormat('d MMM y').format(record.invoiceDate)})",
                 style: TextStyle(
                   color: Colors.grey.shade600,
                 ),
