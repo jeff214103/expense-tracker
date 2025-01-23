@@ -7,11 +7,12 @@ List<Map<String, dynamic>> items = [
     "header": "Welcome",
     "description":
         """Welcome to your expense management app. Track your daily expenses efficiently. 
-Add this app to your home screen by following these steps:""",
+
+Add this app to your home screen by following the steps in the link below:""",
     "image": "assets/images/1.png",
     "link": [
       {
-        "name": "How to add this app to your home screen",
+        "name": "Tutorial link",
         "url":
             "https://www.howtogeek.com/196087/how-to-add-websites-to-the-home-screen-on-any-smartphone-or-tablet/"
       }
@@ -23,11 +24,11 @@ Add this app to your home screen by following these steps:""",
     "description":
         """Your data privacy matters. Here's where your information is stored:
 
-        1. Google Drive - Receipt images
-        2. Google Sheets - Expense records
-        3. Local device - App settings
+1. Google Drive - Receipt images
+2. Google Sheets - Expense records
+3. Local device - App settings
 
-        Note: You are responsible for your device and Google account security. The app developer is not liable for any data breaches due to your security settings.""",
+Note: You are responsible for your device and Google account security. The app developer is not liable for any data breaches due to your security settings.""",
     "image": "assets/images/2.png",
     "link": [
       {
@@ -41,8 +42,8 @@ Add this app to your home screen by following these steps:""",
     "header": "Input",
     "description":
         """Getting started is easy! Scan your receipt, and if you've set up Gemini, the information will be extracted automatically. You can review and adjust the details as needed. 
-        
-        No receipt? You can also input expenses manually.""",
+ 
+No receipt? You can also input expenses manually.""",
     "image": "assets/images/3.png"
   },
   {
