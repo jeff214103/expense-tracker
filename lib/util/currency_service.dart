@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:currency_picker/currency_picker.dart';
+import 'google_sheet.dart';
+import 'package:intl/intl.dart';
 
 class CurrencyServiceCustom {
   static final CurrencyService _instance = CurrencyService();
-  // Exchange rates relative to USD (as of a recent date)
-  // You can update these rates periodically manually if needed
+
+  static bool _initialized = false;
   static final Map<String, double> _exchangeRates = {
     // Existing major currencies
     'USD': 1.0,
@@ -129,6 +131,38 @@ class CurrencyServiceCustom {
     'ZWL': 0.0, // Zimbabwean Dollar
   };
 
+
+  static Map<String, double> get exchangeRates => _exchangeRates;
+
+  // Method to fetch and update exchange rates from Google Sheet
+  static Future<void> updateExchangeRates() {
+    if (_initialized) {
+      return Future.value();
+    }
+    return GoogleSheetHelper.getExchangeRates().then((exchangeRates) {
+      for (final entry in exchangeRates.entries) {
+        _exchangeRates[entry.key] = entry.value;
+      }
+      _initialized = true;
+      return;
+    });
+  }
+
+  // Method to get exchange rate for a specific currency
+  static double getExchangeRate(String currencyCode) {
+    return _exchangeRates[currencyCode] ?? 1.0;
+  }
+
+  // Convert amount from one currency to another
+  static double convertCurrency(
+      double amount, String fromCurrency, String toCurrency) {
+    final fromRate = getExchangeRate(fromCurrency);
+    final toRate = getExchangeRate(toCurrency);
+
+    // Convert through USD (base currency)
+    return amount * (toRate / fromRate);
+  }
+
   static List<String> getAllCurrencies() {
     return _instance.getAll().map((currency) => currency.code).toList();
   }
@@ -167,31 +201,31 @@ class CurrencyServiceCustom {
 
   static String formatCurrency(double amount, String currencyCode) {
     String symbol = getCurrencySymbol(currencyCode);
-    return '$symbol ${amount.toStringAsFixed(2)}';
+    String formattedAmount = NumberFormat('#,##0.00').format(amount);
+    return '$symbol $formattedAmount';
   }
 
   static void pickCurrency(BuildContext context,
       {required void Function(Currency) onSelect}) {
     showCurrencyPicker(
-      context: context,
-      theme: CurrencyPickerThemeData(
-        flagSize: 25,
-        titleTextStyle: const TextStyle(fontSize: 17),
-        subtitleTextStyle:
-            TextStyle(fontSize: 15, color: Theme.of(context).hintColor),
-        bottomSheetHeight: MediaQuery.of(context).size.height / 2,
-        inputDecoration: InputDecoration(
-          labelText: 'Search',
-          hintText: 'Start typing to search',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: const Color(0xFF8C98A8).withOpacity(0.2),
+        context: context,
+        theme: CurrencyPickerThemeData(
+          flagSize: 25,
+          titleTextStyle: const TextStyle(fontSize: 17),
+          subtitleTextStyle:
+              TextStyle(fontSize: 15, color: Theme.of(context).hintColor),
+          bottomSheetHeight: MediaQuery.of(context).size.height / 2,
+          inputDecoration: InputDecoration(
+            labelText: 'Search',
+            hintText: 'Start typing to search',
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: const Color(0xFF8C98A8).withValues(alpha: 0.2),
+              ),
             ),
           ),
         ),
-      ),
-      onSelect: onSelect
-    );
+        onSelect: onSelect);
   }
 }

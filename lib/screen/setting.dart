@@ -1,3 +1,4 @@
+import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -199,8 +200,11 @@ class _SettingScreenState extends State<SettingScreen>
                   _buildGeneralSettingsCard(context, settings),
                   const SizedBox(height: 16),
                   _buildAIAssistanceCard(context, settings),
+                  const SizedBox(height: 16),
                   if (settings.currency != null && widget.isFirstTime)
                     _buildGetStartedButton(context),
+                  _buildExchangeRatesCard(context, settings),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -403,7 +407,7 @@ class _SettingScreenState extends State<SettingScreen>
 
   Container _buildGetStartedButton(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
       child: Center(
         child: FilledButton(
           onPressed: () {
@@ -413,6 +417,105 @@ class _SettingScreenState extends State<SettingScreen>
         ),
       ),
     );
+  }
+
+  Widget _buildExchangeRatesCard(
+      BuildContext context, SettingProvider settings) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Exchange Rates',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "For every 1 USD, the app will compute based on the exchange rate from Google Finance.  List of available currencies below.",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Expanded(
+                child: _buildExchangeRatesList(context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExchangeRatesList(BuildContext context) {
+    final rates = CurrencyServiceCustom.exchangeRates;
+    final sortedCurrencies = rates.keys
+        .where((code) => rates[code] != 0.0 && rates[code] != 1.0)
+        .toList()
+      ..sort((a, b) => a.compareTo(b));
+
+    return (sortedCurrencies.isEmpty)
+        ? const Center(
+            child: Text(
+              'No exchange rates available',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ListView.builder(
+              itemCount: sortedCurrencies.length,
+              itemBuilder: (context, index) {
+                final currencyCode = sortedCurrencies[index];
+                final rate = rates[currencyCode];
+                final currencyName =
+                    CurrencyServiceCustom.findByCode(currencyCode)?.name ??
+                        currencyCode;
+
+                return ListTile(
+                  title: Row(
+                    children: [
+                      Text(
+                        (MediaQuery.of(context).size.width > 800)
+                            ? "$currencyCode - $currencyName"
+                            : currencyCode,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      (MediaQuery.of(context).size.width < 800)
+                          ? Tooltip(
+                              message: currencyName,
+                              child: Icon(
+                                Icons.info_outline,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            )
+                          : const SizedBox(),
+                    ],
+                  ),
+                  subtitle: Text(
+                    rate?.toStringAsFixed(4) ?? 'N/A',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                );
+              },
+            ),
+          );
   }
 }
 

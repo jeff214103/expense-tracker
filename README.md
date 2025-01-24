@@ -37,7 +37,8 @@ We welcome contributions from the community! If you'd like to contribute, please
    Submit a pull request to the main repository, describing your changes.
 
 ## Roadmap
-- [ ] Auomatic exchange rate update
+- [X] Auomatic exchange rate update (Implemented in version 1.0.1)
+- [X] Payment from credit card exchange (Implemented in version 1.0.1)
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 

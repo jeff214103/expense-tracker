@@ -55,13 +55,11 @@ class _HomePageState extends State<HomePage>
       duration: const Duration(milliseconds: 300),
     );
 
-    applicationLoaded = configureApplication(context);
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
+    // Initialize exchange rates when home page loads
+    applicationLoaded = Future.wait([
+      CurrencyServiceCustom.updateExchangeRates(),
+      configureApplication(context),
+    ]);
   }
 
   Future<void> configureApplication(BuildContext context) async {
@@ -88,6 +86,12 @@ class _HomePageState extends State<HomePage>
         _animationController.forward();
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   // Enhanced error notification widget
@@ -162,7 +166,8 @@ class _HomePageState extends State<HomePage>
             GoogleSignInHelper.signOut().then((GoogleSignInAccount? account) {
               // Navigate back to the login screen
               Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const GoogleSignInPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const GoogleSignInPage()),
                   (Route<dynamic> route) => false);
             });
           },
@@ -179,7 +184,7 @@ class _HomePageState extends State<HomePage>
               future: applicationLoaded,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const LoadingHint(text: 'Loading data...');
+                  return const LoadingHint(text: 'Configuring application...');
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Column(
@@ -204,7 +209,10 @@ class _HomePageState extends State<HomePage>
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => setState(() {
-                            applicationLoaded = configureApplication(context);
+                            applicationLoaded = Future.wait([
+                              CurrencyServiceCustom.updateExchangeRates(),
+                              configureApplication(context),
+                            ]);
                           }),
                           child: const Text('Retry'),
                         ),
@@ -519,7 +527,7 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
   Widget build(BuildContext context) {
     return Consumer<SettingProvider>(
       builder: (context, settings, child) {
-        selectedCurrency = settings.currency ?? "USD";
+        selectedCurrency ??= (settings.currency ?? "USD");
         final stats = _calculateStats(settings);
 
         return Card(

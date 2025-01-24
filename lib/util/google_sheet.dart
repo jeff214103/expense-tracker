@@ -1,5 +1,7 @@
 import 'package:expense_tracker_web/models/expense_record.dart';
+import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -203,5 +205,93 @@ class GoogleSheetHelper {
       print('Error updating final amount: $e');
       return false;
     }
+  }
+
+  static Future<void> initializeExchangeRatesSheet(sheets.SheetsApi sheetsApi,
+      String spreadsheetId, String sheetTitle) async {
+    try {
+      // Define major currencies to track
+      final currencies = CurrencyServiceCustom.getAllCurrencies();
+
+      // Prepare batch update request
+      final requests = <sheets.Request>[];
+
+      // Add sheet if it doesn't exist
+      requests.add(sheets.Request(
+        addSheet: sheets.AddSheetRequest(
+          properties: sheets.SheetProperties(
+            title: sheetTitle,
+            gridProperties: sheets.GridProperties(
+              rowCount: currencies.length + 1,
+              columnCount: 2,
+            ),
+          ),
+        ),
+      ));
+
+      // Batch update to create sheet
+      await sheetsApi.spreadsheets.batchUpdate(
+        sheets.BatchUpdateSpreadsheetRequest(requests: requests),
+        spreadsheetId,
+      );
+
+      // Prepare values to write
+      final values = <List<String>>[
+        ['Currency', 'Exchange Rate'], // Header
+        ...currencies
+            .map((currency) =>
+                [currency, '=GOOGLEFINANCE("CURRENCY:USD$currency")'])
+            .toList(),
+      ];
+
+      // Write headers and formulas
+      await sheetsApi.spreadsheets.values.update(
+        sheets.ValueRange(values: values),
+        spreadsheetId,
+        '$sheetTitle!A1:B${values.length}',
+        valueInputOption: 'USER_ENTERED',
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing $sheetTitle sheet: $e');
+      }
+    }
+  }
+
+  static Future<Map<String, double>> getExchangeRates() async {
+    Map<String, double> exchangeRates = {};
+    final spreadsheetId = await GoogleSheetHelper.getSpreadsheetId();
+    final googleAuth =
+        await GoogleSignInHelper.googleSignIn.authenticatedClient();
+    final sheetsApi = sheets.SheetsApi(googleAuth!);
+
+    final spreadsheet = await sheetsApi.spreadsheets.get(spreadsheetId);
+
+    const String sheetTitle = 'Exchange Rates';
+    bool sheetExists = spreadsheet.sheets
+            ?.any((sheet) => sheet.properties?.title == sheetTitle) ??
+        false;
+
+    if (!sheetExists) {
+      // Ensure spreadsheet exists
+      initializeExchangeRatesSheet(sheetsApi, spreadsheetId, sheetTitle);
+    }
+
+    // Read exchange rates from the sheet
+    final response = await sheetsApi.spreadsheets.values.get(
+      spreadsheetId,
+      '$sheetTitle!A2:B', // Assuming A column is currency code, B column is rate
+    );
+
+    if (response.values != null) {
+      for (var row in response.values!) {
+        if (row.length >= 2) {
+          final currencyCode = row[0].toString();
+          final rate = double.tryParse(row[1].toString()) ?? 1.0;
+          exchangeRates[currencyCode] = rate;
+        }
+      }
+    }
+    return exchangeRates;
   }
 }

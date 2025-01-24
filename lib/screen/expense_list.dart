@@ -435,7 +435,10 @@ class _ExpenseListState extends State<ExpenseList>
                 controller: TextEditingController(text: newAmount),
                 onChanged: (value) => newAmount = value,
               ),
-              Text("Input your final payment amount in ${settingProvider.currency}, and all calcuation will be based on this amount and the setting currency.", style: TextStyle(color: Colors.grey.shade600),),
+              Text(
+                "Input your final payment amount in ${settingProvider.currency}, and all calcuation will be based on this amount and the setting currency.",
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
             ],
           ),
           actions: [
@@ -444,12 +447,8 @@ class _ExpenseListState extends State<ExpenseList>
               child:
                   Text('Cancel', style: TextStyle(color: Colors.red.shade900)),
             ),
-            ElevatedButton(
+            FilledButton(
               onPressed: () => Navigator.of(context).pop(newAmount),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade700,
-                foregroundColor: Colors.white,
-              ),
               child: const Text('Update'),
             ),
           ],
