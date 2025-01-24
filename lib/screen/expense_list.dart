@@ -330,7 +330,8 @@ class _ExpenseListState extends State<ExpenseList>
               physics: const NeverScrollableScrollPhysics(),
               itemCount: expenseData?.length ?? 0,
               itemBuilder: (context, index) {
-                return _buildExpenseListItem(expenseData![index]);
+                return _buildExpenseListItem(
+                    context, expenseData![index], index);
               },
             )
           else
@@ -341,7 +342,8 @@ class _ExpenseListState extends State<ExpenseList>
                   controller: _scrollController,
                   itemCount: expenseData?.length ?? 0,
                   itemBuilder: (context, index) {
-                    return _buildExpenseListItem(expenseData![index]);
+                    return _buildExpenseListItem(
+                        context, expenseData![index], index);
                   },
                 ),
               ),
@@ -402,7 +404,135 @@ class _ExpenseListState extends State<ExpenseList>
     );
   }
 
-  Widget _buildExpenseListItem(ExpenseRecord record) {
+  Future<void> _updateFinalAmount(ExpenseRecord record, int index) async {
+    final settingProvider =
+        Provider.of<SettingProvider>(context, listen: false);
+
+    // Show a dialog to input the final amount
+    final updatedAmount = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        String? newAmount =
+            record.finalAmount.isNotEmpty ? record.finalAmount : record.amount;
+
+        return AlertDialog(
+          title: Text(
+            'Final Payment Amount in ${settingProvider.currency}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Final Amount (${settingProvider.currency})',
+                  hintText: 'Enter final paid amount',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                controller: TextEditingController(text: newAmount),
+                onChanged: (value) => newAmount = value,
+              ),
+              Text("Input your final payment amount in ${settingProvider.currency}, and all calcuation will be based on this amount and the setting currency.", style: TextStyle(color: Colors.grey.shade600),),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(null),
+              child:
+                  Text('Cancel', style: TextStyle(color: Colors.red.shade900)),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(newAmount),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade700,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (updatedAmount == null) return;
+
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade700),
+        ),
+      ),
+    );
+
+    try {
+      // Attempt to update the final amount in Google Sheet
+      final success = await GoogleSheetHelper.updateFinalAmount(
+        sheetTitle: selectedSheet!,
+        rowIndex: index,
+        finalAmount: updatedAmount,
+        currency: settingProvider.currency ?? 'USD',
+      );
+
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      if (success) {
+        // Update local state
+        setState(() {
+          expenseData![index] = ExpenseRecord(
+            uploadDate: record.uploadDate,
+            invoiceDate: record.invoiceDate,
+            item: record.item,
+            category: record.category,
+            currency: record.currency,
+            amount: record.amount,
+            fileName: record.fileName,
+            finalAmount: updatedAmount,
+          );
+          _calculateCategorySums(); // Recalculate sums with updated amount
+        });
+
+        // Show success snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Final amount updated successfully'),
+            backgroundColor: Colors.green.shade700,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        // Show error snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to update final amount'),
+            backgroundColor: Colors.red.shade900,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show detailed error snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error updating final amount: ${e.toString()}'),
+          backgroundColor: Colors.red.shade900,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  Widget _buildExpenseListItem(
+      BuildContext context, ExpenseRecord record, int index) {
     final isMobileScreen = MediaQuery.of(context).size.width < 768;
     final isVerySmallScreen = MediaQuery.of(context).size.width < 400;
 
@@ -419,30 +549,30 @@ class _ExpenseListState extends State<ExpenseList>
           ),
           child: Padding(
             padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  record.item,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  record.category,
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 13,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      record.item,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      record.category,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
                     Text(
                       DateFormat('d MMM y').format(record.invoiceDate),
                       style: TextStyle(
@@ -450,14 +580,11 @@ class _ExpenseListState extends State<ExpenseList>
                         fontSize: 13,
                       ),
                     ),
-                    Text(
-                      '${record.amount} ${record.currency}',
-                      style: TextStyle(
-                        color: Colors.blue.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ],
+                ),
+                AmountText(
+                  expense: record,
+                  onPressed: () => _updateFinalAmount(record, index),
                 ),
               ],
             ),
@@ -508,15 +635,65 @@ class _ExpenseListState extends State<ExpenseList>
             constraints: BoxConstraints(
               maxWidth: isMobileScreen ? 120 : 200,
             ),
-            child: Text(
-              '${record.amount} ${record.currency}',
-              style: TextStyle(
-                color: Colors.blue.shade700,
-                fontWeight: FontWeight.bold,
-              ),
-              overflow: TextOverflow.ellipsis,
+            child: AmountText(
+              expense: record,
+              onPressed: () => _updateFinalAmount(record, index),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class AmountText extends StatelessWidget {
+  final ExpenseRecord expense;
+  final void Function()? onPressed;
+
+  const AmountText({super.key, required this.expense, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    String? settingCurrency = Provider.of<SettingProvider>(context).currency;
+    bool showFinalAmount = (expense.currency == settingCurrency ||
+        expense.finalAmount != expense.amount);
+
+    return Tooltip(
+      message: 'Final Charge Amount',
+      child: InkWell(
+        onTap: onPressed,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (expense.finalAmount != expense.amount)
+                    Text(
+                      '${expense.amount} ${expense.currency}',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  Text(
+                    (showFinalAmount)
+                        ? '${expense.finalAmount} $settingCurrency'
+                        : '${expense.amount} ${expense.currency}',
+                    style: TextStyle(
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.edit,
+              color: Colors.blue.shade700,
+              size: 16,
+            ),
+          ],
         ),
       ),
     );

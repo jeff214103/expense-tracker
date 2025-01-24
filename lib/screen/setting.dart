@@ -1,3 +1,4 @@
+import 'package:expense_tracker_web/widgets/custom_scafold.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_picker/currency_picker.dart';
@@ -31,7 +32,6 @@ class _SettingScreenState extends State<SettingScreen>
     _animationController.dispose();
     super.dispose();
   }
-
 
   Future<void> _showNumberInputDialog({
     required BuildContext context,
@@ -187,14 +187,10 @@ class _SettingScreenState extends State<SettingScreen>
   @override
   Widget build(BuildContext context) {
     return Consumer<SettingProvider>(
-      builder: (context, settings, child) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Settings'),
-          leading: (widget.isFirstTime) ? const SizedBox() : null,
-          elevation: 1,
-          shadowColor: Theme.of(context).shadowColor,
-        ),
-        body: Stack(
+      builder: (context, settings, child) => CustomScafold(
+        title: 'Settings',
+        leading: (widget.isFirstTime) ? const SizedBox() : null,
+        child: Stack(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -204,7 +200,7 @@ class _SettingScreenState extends State<SettingScreen>
                   const SizedBox(height: 16),
                   _buildAIAssistanceCard(context, settings),
                   if (settings.currency != null && widget.isFirstTime)
-                    _buildGetStartedButton(context),           
+                    _buildGetStartedButton(context),
                 ],
               ),
             ),

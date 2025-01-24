@@ -168,4 +168,40 @@ class GoogleSheetHelper {
         .map((row) => ExpenseRecord.fromSheetRow(row))
         .toList();
   }
+
+  static Future<bool> updateFinalAmount({
+    required String sheetTitle,
+    required int rowIndex, // 1-based index, excluding header
+    required String finalAmount,
+    required String currency,
+  }) async {
+    try {
+      final googleAuth =
+          (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+      final sheetsApi = sheets.SheetsApi(googleAuth);
+
+      final spreadsheetId = await getSpreadsheetId();
+
+      // Construct the range to update the final amount column (8th column)
+      // Add 2 to rowIndex to account for 1-based indexing and header row
+      String range = '$sheetTitle!H${rowIndex + 2}:H${rowIndex + 2}';
+
+      final valueRange = sheets.ValueRange()
+        ..values = [
+          [finalAmount]
+        ];
+
+      await sheetsApi.spreadsheets.values.update(
+        valueRange,
+        spreadsheetId,
+        range,
+        valueInputOption: 'USER_ENTERED',
+      );
+
+      return true;
+    } catch (e) {
+      print('Error updating final amount: $e');
+      return false;
+    }
+  }
 }

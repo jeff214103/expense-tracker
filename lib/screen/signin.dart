@@ -35,14 +35,16 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              bottom: 20.0,
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05, // 5% padding on left and right
+              vertical: screenHeight * 0.05, // 5% padding on top and bottom
             ),
             child: Column(
               mainAxisSize: MainAxisSize.max,
@@ -56,7 +58,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                         flex: 1,
                         child: Image.asset(
                           'assets/images/buymecoffee.png',
-                          height: 200,
+                          height: screenHeight * 0.25, // 25% of screen height
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -70,6 +72,15 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                     ],
                   ),
                 ),
+                // Add app version text
+                const Text(
+                  'Version 1.0.0', // Update this to your app's version
+                  style: TextStyle(
+                    fontSize: 14, // Reduced font size for better fit
+                    color: Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 20), // Add some spacing
                 // (GoogleSignInPlatform.instance as web.GoogleSignInPlugin)
                 // .renderButton()
                 OutlinedButton(

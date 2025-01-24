@@ -4,9 +4,11 @@ class CustomScafold extends StatelessWidget {
   const CustomScafold(
       {super.key,
       required this.title,
+      this.leading = null,
       this.actions,
       this.child,
       this.onLongPress});
+  final Widget? leading;
   final String title;
   final List<Widget>? actions;
   final Widget? child;
@@ -17,6 +19,7 @@ class CustomScafold extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
+          leading: null,
           title: GestureDetector(
             onLongPress: onLongPress,
             child: Text(
