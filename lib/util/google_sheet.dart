@@ -144,7 +144,24 @@ class GoogleSheetHelper {
       });
   }
 
-  static Future<List<ExpenseRecord>?> getSheetData(String sheetTitle) async {
+  // Cache to store sheet data
+  static final Map<String, List<ExpenseRecord>> _cachedSheetData = {};
+
+  static Future<List<ExpenseRecord>?> getSheetData(
+    String sheetTitle, {
+    bool force = false,
+  }) async {
+    // If not forced and data exists in cache, return cached data
+    if (!force && _cachedSheetData.containsKey(sheetTitle)) {
+      if (kDebugMode) {
+        print('Cached sheet data found for $sheetTitle');
+      }
+      return _cachedSheetData[sheetTitle];
+    }
+    if (kDebugMode) {
+      print('Fetching sheet data for $sheetTitle');
+    }
+
     final googleAuth =
         (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
     final sheetsApi = sheets.SheetsApi(googleAuth);
@@ -166,9 +183,14 @@ class GoogleSheetHelper {
       '$sheetTitle!A2:H',
     );
 
-    return (response.values ?? [])
+    final sheetData = (response.values ?? [])
         .map((row) => ExpenseRecord.fromSheetRow(row))
         .toList();
+
+    // Cache the fetched data
+    _cachedSheetData[sheetTitle] = sheetData;
+
+    return sheetData;
   }
 
   static Future<bool> updateFinalAmount({

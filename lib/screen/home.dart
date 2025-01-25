@@ -429,7 +429,7 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
 
     try {
       final currentData =
-          await GoogleSheetHelper.getSheetData('Expense ($currentMonth)');
+          await GoogleSheetHelper.getSheetData('Expense ($currentMonth)', force: true);
       final lastData =
           await GoogleSheetHelper.getSheetData('Expense ($lastMonth)');
 

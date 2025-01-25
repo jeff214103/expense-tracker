@@ -39,6 +39,10 @@ We welcome contributions from the community! If you'd like to contribute, please
 ## Roadmap
 - [X] Auomatic exchange rate update (Implemented in version 1.0.1)
 - [X] Payment from credit card exchange (Implemented in version 1.0.1)
+- [X] Caching from sheet API (Implemented in version 1.0.2)
+- [X] Receipt viewing (Implemented in version 1.0.2)
+- [X] Expense filtering (Implemented in version 1.0.2)
+- [ ] Delete file in the app
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 

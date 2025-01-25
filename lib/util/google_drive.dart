@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
@@ -51,6 +52,69 @@ class GoogleDriveHelper {
       newFolder.name = folderName;
       final createdFolder = await driveApi.files.create(newFolder);
       return createdFolder.id!; // Return newly created folder ID
+    }
+  }
+
+  static Future<String?> findFileIdByName(String filename) async {
+    try {
+      // Get authenticated client
+      final authClient =
+          (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+      final drive.DriveApi driveApi = drive.DriveApi(authClient);
+      
+      // First, get the Expense Receipt folder ID
+      final folderId = await checkAndCreateFolder(driveApi, "Expense Receipt");
+
+      // Query for the file within the Expense Receipt folder
+      final query = "'$folderId' in parents and name = '$filename'";
+      final fileList = await driveApi.files.list(q: query);
+
+      // Return the first matching file's ID, if any
+      return fileList.files?.isNotEmpty == true
+          ? fileList.files!.first.id
+          : null;
+    } catch (e) {
+      print('Error finding file: $e');
+      return null;
+    }
+  }
+
+  static Future<Uint8List?> downloadFile(String filename) async {
+    try {
+      // Find the file ID first
+      final fileId = await findFileIdByName(filename);
+
+      if (fileId == null) {
+        print('No file found with name: $filename');
+        return null;
+      }
+
+      // Get authenticated client
+      final authClient =
+          (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+      final drive.DriveApi driveApi = drive.DriveApi(authClient);
+
+      // Download file media
+      final media = await driveApi.files.get(fileId,
+          downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
+
+      // Convert stream to Uint8List
+      final completer = Completer<Uint8List>();
+      final sink = ByteConversionSink.withCallback((bytes) {
+        completer.complete(Uint8List.fromList(bytes));
+      });
+
+      media.stream.listen(
+        sink.add,
+        onDone: sink.close,
+        onError: completer.completeError,
+        cancelOnError: true,
+      );
+
+      return completer.future;
+    } catch (e) {
+      print('Error downloading file: $e');
+      return null;
     }
   }
 }
