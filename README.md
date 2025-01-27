@@ -42,7 +42,10 @@ We welcome contributions from the community! If you'd like to contribute, please
 - [X] Caching from sheet API (Implemented in version 1.0.2)
 - [X] Receipt viewing (Implemented in version 1.0.2)
 - [X] Expense filtering (Implemented in version 1.0.2)
-- [ ] Delete file in the app
+- [X] Delete file in the app (Implemented in version 1.0.3)
+- [X] Setting Sync (Implemented in version 1.0.3)
+- [X] Exchange Rate Calculator (Implemented in version 1.0.3)
+- [ ] Exchange Rate Calculator based on user location
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
 

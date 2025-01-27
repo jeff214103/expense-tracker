@@ -1,5 +1,6 @@
 import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
+import 'package:expense_tracker_web/widgets/dialog_body.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_picker/currency_picker.dart';
@@ -17,7 +18,6 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -32,6 +32,22 @@ class _SettingScreenState extends State<SettingScreen>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _showActionWaitingDialog({Future<void> Function()? callback}) async {
+    // Show the dialog and wait for it to be displayed
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const LoadingDialogBody(
+        text: 'Action in progress...',),
+    );
+
+    if (callback != null) {
+      await callback();
+    }
+    Navigator.of(context).pop();
+
   }
 
   Future<void> _showNumberInputDialog({
@@ -94,8 +110,9 @@ class _SettingScreenState extends State<SettingScreen>
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 final value = double.parse(controller.text);
-                onSave(value);
                 Navigator.of(context).pop();
+                _showActionWaitingDialog(callback: () => onSave(value));
+
               }
             },
             child: const Text('Save'),
@@ -143,8 +160,9 @@ class _SettingScreenState extends State<SettingScreen>
           ElevatedButton(
             onPressed: () {
               if (formKey.currentState!.validate()) {
-                onSave(controller.text.trim());
                 Navigator.of(context).pop();
+                _showActionWaitingDialog(
+                    callback: () => onSave(controller.text.trim()));
               }
             },
             child: const Text('Save'),
@@ -174,8 +192,9 @@ class _SettingScreenState extends State<SettingScreen>
               groupValue: currentModel,
               onChanged: (value) {
                 if (value != null) {
-                  onModelSelect(value);
                   Navigator.of(context).pop();
+                  _showActionWaitingDialog(
+                      callback: () => onModelSelect(value));
                 }
               },
             );
@@ -191,28 +210,20 @@ class _SettingScreenState extends State<SettingScreen>
       builder: (context, settings, child) => CustomScafold(
         title: 'Settings',
         leading: (widget.isFirstTime) ? const SizedBox() : null,
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
-                children: [
-                  _buildGeneralSettingsCard(context, settings),
-                  const SizedBox(height: 16),
-                  _buildAIAssistanceCard(context, settings),
-                  const SizedBox(height: 16),
-                  if (settings.currency != null && widget.isFirstTime)
-                    _buildGetStartedButton(context),
-                  _buildExchangeRatesCard(context, settings),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-            if (_isLoading)
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              _buildGeneralSettingsCard(context, settings),
+              const SizedBox(height: 16),
+              _buildAIAssistanceCard(context, settings),
+              const SizedBox(height: 16),
+              if (settings.currency != null && widget.isFirstTime)
+                _buildGetStartedButton(context),
+              _buildExchangeRatesCard(context, settings),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -257,7 +268,8 @@ class _SettingScreenState extends State<SettingScreen>
                   showCurrencyName: true,
                   showCurrencyCode: true,
                   onSelect: (Currency currency) {
-                    settings.updateCurrency(currency.code);
+                    _showActionWaitingDialog(
+                        callback: () => settings.updateCurrency(currency.code));
                   },
                 );
               },
@@ -267,12 +279,12 @@ class _SettingScreenState extends State<SettingScreen>
               context,
               title: 'Income',
               subtitle: settings.income.toString(),
-              description: 'Your monthly income. Stored only on your device.',
+              description: 'Your monthly income.',
               onTap: () => _showNumberInputDialog(
                 context: context,
                 title: 'Income',
                 hintText:
-                    'Your monthly income. It will only store on your device, not used anywhere else.',
+                    'Your monthly income. It will store on your sheet setting.',
                 currentValue: settings.income,
                 onSave: (value) => settings.updateIncome(value),
               ),
@@ -287,7 +299,7 @@ class _SettingScreenState extends State<SettingScreen>
                 context: context,
                 title: 'Regular Cost',
                 hintText:
-                    'Your monthly cost that deducted from your income. It will only store on your device, not used anywhere else.',
+                    'Your monthly cost that deducted from your income. It will store on your sheet setting, not used anywhere else.',
                 currentValue: settings.regularCost,
                 onSave: (value) => settings.updateRegularCost(value),
               ),
@@ -350,7 +362,7 @@ class _SettingScreenState extends State<SettingScreen>
                 context,
                 'Gemini API Key',
                 settings.geminiKey,
-                (value) => settings.updateGeminiKey(value),
+                (value) async => (await settings.updateGeminiKey(value)),
               ),
             ),
             const Divider(),
@@ -364,7 +376,7 @@ class _SettingScreenState extends State<SettingScreen>
               onTap: () => _showModelSelectionDialog(
                 context,
                 settings.geminiModel,
-                (value) => settings.updateGeminiModel(value),
+                (value) async => (await settings.updateGeminiModel(value)),
               ),
             ),
             const SizedBox(height: 8),

@@ -3,6 +3,7 @@ import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:expense_tracker_web/screen/expense_list.dart';
 import 'package:expense_tracker_web/screen/signin.dart';
 import 'package:expense_tracker_web/screen/welcome.dart';
+import 'package:expense_tracker_web/widgets/exchange_rate_dialog.dart';
 import 'package:expense_tracker_web/widgets/loading_hint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -164,6 +165,7 @@ class _HomePageState extends State<HomePage>
           onPressed: () async {
             // Sign out the user
             GoogleSignInHelper.signOut().then((GoogleSignInAccount? account) {
+              Provider.of<SettingProvider>(context, listen: false).reset();
               // Navigate back to the login screen
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
@@ -392,6 +394,17 @@ class DashboardLayout extends StatelessWidget {
                     const SettingScreen(),
                   );
                 },
+              ),
+              Dashboarditem(
+                title: 'EXCHANGE RATE',
+                iconData: Icons.currency_exchange,
+                background: Colors.yellow.shade600,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ExchangeRateDialog(),
+                  );
+                },
               )
             ],
           ),
@@ -428,8 +441,9 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
         DateFormat('y MMM').format(DateTime(now.year, now.month - 1));
 
     try {
-      final currentData =
-          await GoogleSheetHelper.getSheetData('Expense ($currentMonth)', force: true);
+      final currentData = await GoogleSheetHelper.getSheetData(
+          'Expense ($currentMonth)',
+          force: true);
       final lastData =
           await GoogleSheetHelper.getSheetData('Expense ($lastMonth)');
 

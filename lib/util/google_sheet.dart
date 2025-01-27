@@ -316,4 +316,204 @@ class GoogleSheetHelper {
     }
     return exchangeRates;
   }
+
+  static Future<bool> clearFileName({
+    required String sheetTitle,
+    required int rowIndex,
+  }) async {
+    final googleAuth =
+        (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+    final sheetsApi = sheets.SheetsApi(googleAuth);
+
+    final spreadsheetId = await getSpreadsheetId();
+
+    try {
+      final range =
+          '$sheetTitle!G${rowIndex + 2}:G${rowIndex + 2}'; // +1 because sheets are 1-indexed
+
+      await sheetsApi.spreadsheets.values.update(
+        sheets.ValueRange()
+          ..values = [
+            ['']
+          ],
+        spreadsheetId,
+        range,
+        valueInputOption: 'USER_ENTERED',
+      );
+
+      // Invalidate cache for this sheet
+      _cachedSheetData.remove(sheetTitle);
+
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error clearing filename: $e');
+      }
+      return false;
+    }
+  }
+
+  // Singleton instance to manage settings
+  static final SettingsManager _settingsManager = SettingsManager();
+
+  // Getter for the settings manager
+  static SettingsManager get settingsManager => _settingsManager;
+
+  // New methods for settings management
+  static Future<void> initializeSettings(
+    Set<String> keys,
+  ) async {
+    _settingsManager.initialize(keys);
+    final googleAuth =
+        (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+    final sheetsApi = sheets.SheetsApi(googleAuth);
+    final spreadsheetId = await getSpreadsheetId();
+
+    const String sheetTitle = 'Setting';
+
+    try {
+      // Check if sheet exists
+      final spreadsheet = await sheetsApi.spreadsheets.get(spreadsheetId);
+      bool sheetExists = spreadsheet.sheets
+              ?.any((sheet) => sheet.properties?.title == sheetTitle) ??
+          false;
+
+      // Prepare batch update request
+      final requests = <sheets.Request>[];
+
+      // Add sheet if it doesn't exist
+      if (!sheetExists) {
+        requests.add(sheets.Request(
+          addSheet: sheets.AddSheetRequest(
+            properties: sheets.SheetProperties(
+              title: sheetTitle,
+              gridProperties: sheets.GridProperties(),
+            ),
+          ),
+        ));
+
+        // Batch update to create sheet
+        await sheetsApi.spreadsheets.batchUpdate(
+          sheets.BatchUpdateSpreadsheetRequest(requests: requests),
+          spreadsheetId,
+        );
+
+        // Write headers
+        await sheetsApi.spreadsheets.values.update(
+          sheets.ValueRange(values: [
+            ['Key', 'Value']
+          ]),
+          spreadsheetId,
+          '$sheetTitle!A1:B1',
+          valueInputOption: 'USER_ENTERED',
+        );
+      }
+
+      // Read settings
+      final response = await sheetsApi.spreadsheets.values
+          .get(spreadsheetId, '$sheetTitle!A1:B${keys.length + 1}');
+
+      final values = response.values ?? [];
+
+      // Skip header row
+      for (int i = 1; i < values.length; i++) {
+        if (values[i].length >= 2) {
+          _settingsManager.addSetting(values[i][0].toString(), values[i][1],
+              i + 1 // Row index (1-based)
+              );
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing Setting sheet: $e');
+      }
+    }
+  }
+
+  static Future<void> updateSetting(String key, dynamic value) async {
+    final googleAuth =
+        (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+    final sheetsApi = sheets.SheetsApi(googleAuth);
+    final spreadsheetId = await getSpreadsheetId();
+
+    final rowIndex = _settingsManager.getRowIndex(key);
+
+    try {
+      if (rowIndex != null) {
+        // Update existing setting
+        await sheetsApi.spreadsheets.values.update(
+            sheets.ValueRange()
+              ..values = [
+                [value]
+              ],
+            spreadsheetId,
+            'Setting!B$rowIndex:B$rowIndex',
+            valueInputOption: 'USER_ENTERED');
+      } else {
+        // Append new setting if not exists
+        await sheetsApi.spreadsheets.values.append(
+            sheets.ValueRange()
+              ..values = [
+                [key, value]
+              ],
+            spreadsheetId,
+            'Setting!A1:B1',
+            valueInputOption: 'USER_ENTERED');
+
+        // Reinitialize to update row indices
+        await initializeSettings(_settingsManager.settingKeys);
+      }
+    } catch (e) {
+      print('Error updating setting: $e');
+    }
+  }
+
+  // Method to migrate existing settings if sheet is newly created
+  static Future<void> migrateSettings(
+      Map<String, dynamic> existingSettings) async {
+    final googleAuth =
+        (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+    final sheetsApi = sheets.SheetsApi(googleAuth);
+    final spreadsheetId = await getSpreadsheetId();
+
+    try {
+      // Convert existing settings to rows
+      final values = existingSettings.entries
+          .map((entry) => [entry.key, entry.value])
+          .toList();
+
+      // Write all existing settings to the sheet
+      await sheetsApi.spreadsheets.values.update(
+          sheets.ValueRange(values: values),
+          spreadsheetId,
+          'Setting!A2:B${values.length + 1}',
+          valueInputOption: 'USER_ENTERED');
+    } catch (e) {
+      print('Error migrating settings: $e');
+    }
+  }
+}
+
+class SettingsManager {
+  final Map<String, int> _settingRowIndices = {};
+  final Map<String, dynamic> _settingValues = {};
+  final Set<String> _settingKeys = {};
+
+  Set<String> get settingKeys => _settingKeys;
+
+  void initialize(Set<String> keys) {
+    _settingRowIndices.clear();
+    _settingValues.clear();
+    _settingKeys.clear();
+    _settingKeys.addAll(keys);
+  }
+
+  void addSetting(String key, dynamic value, int rowIndex) {
+    _settingRowIndices[key] = rowIndex;
+    _settingValues[key] = value;
+  }
+
+  int? getRowIndex(String key) => _settingRowIndices[key];
+  dynamic getValue(String key) => _settingValues[key];
+  Map<String, dynamic> getAllSettings() => _settingValues;
 }

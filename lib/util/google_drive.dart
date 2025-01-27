@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 class GoogleDriveHelper {
@@ -74,7 +74,9 @@ class GoogleDriveHelper {
           ? fileList.files!.first.id
           : null;
     } catch (e) {
-      print('Error finding file: $e');
+      if (kDebugMode) {
+        print('Error finding file: $e');
+      }
       return null;
     }
   }
@@ -85,7 +87,9 @@ class GoogleDriveHelper {
       final fileId = await findFileIdByName(filename);
 
       if (fileId == null) {
-        print('No file found with name: $filename');
+        if (kDebugMode) {
+          print('No file found with name: $filename');
+        }
         return null;
       }
 
@@ -115,6 +119,44 @@ class GoogleDriveHelper {
     } catch (e) {
       print('Error downloading file: $e');
       return null;
+    }
+  }
+
+  static Future<bool> removeFileWithRollback({
+    required String filename,
+    required Future<bool> Function() additionalCleanupAction,
+  }) async {
+    try {
+      // Get authenticated client
+      final authClient =
+          (await GoogleSignInHelper.googleSignIn.authenticatedClient())!;
+      final driveApi = drive.DriveApi(authClient);
+      
+      // Find the file ID
+      final fileId = await findFileIdByName(filename);
+      
+      if (fileId == null) {
+        if (kDebugMode) {
+          print('No file found with name: $filename');
+        }
+        return false;
+      }
+
+      // Perform concurrent operations
+      final List<dynamic> results = await Future.wait([
+        // Delete file from Google Drive
+        driveApi.files.delete(fileId),
+        
+        // Run additional cleanup action (e.g., clearing sheet filename)
+        additionalCleanupAction(),
+      ]);
+
+      return results[1] == true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error removing file $filename: $e');
+      }
+      return false;
     }
   }
 }

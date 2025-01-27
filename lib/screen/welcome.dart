@@ -25,8 +25,7 @@ Add this app to your home screen by following the steps in the link below:""",
         """Your data privacy matters. Here's where your information is stored:
 
 1. Google Drive - Receipt images
-2. Google Sheets - Expense records
-3. Local device - App settings
+2. Google Sheets - Expense records, Exchange Rates, Settings
 
 Note: You are responsible for your device and Google account security. The app developer is not liable for any data breaches due to your security settings.""",
     "image": "assets/images/2.png",

@@ -234,6 +234,7 @@ class _ExpenseListState extends State<ExpenseList>
       elevation: 4,
       margin: const EdgeInsets.all(16.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
@@ -248,16 +249,17 @@ class _ExpenseListState extends State<ExpenseList>
             ),
           ),
           const Divider(),
-          Expanded(
+          Flexible(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // ConstrainedBox(
                 //   constraints: const BoxConstraints(maxHeight: 250),
                 //   child: _buildCategoryPieChart(),
                 // ),
-                Expanded(
-                  child: _buildCategoryList(),
-                ),
+                (isMobile)
+                    ? Flexible(child: _buildCategoryList())
+                    : Expanded(child: _buildCategoryList()),
               ],
             ),
           ),
@@ -384,7 +386,7 @@ class _ExpenseListState extends State<ExpenseList>
             padding: const EdgeInsets.all(16.0),
             child: _buildMonthSelector(),
           ),
-          if (filteredExpenses == null || filteredExpenses!.isEmpty)
+          if (filteredExpenses == null || filteredExpenses.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
@@ -458,8 +460,9 @@ class _ExpenseListState extends State<ExpenseList>
     return SingleChildScrollView(
       child: Column(
         children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.7,
+          Container(
+            constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.7),
             child: _buildCategorySummary(isMobile: true),
           ),
           _buildExpenseList(isMobile: true),
@@ -610,10 +613,28 @@ class _ExpenseListState extends State<ExpenseList>
     }
   }
 
-  void _showFilePreviewModal(BuildContext context, String fileName) {
+  void _showFilePreviewModal(String fileName, int index) {
     showDialog(
       context: context,
-      builder: (context) => FilePreviewDialog(fileName: fileName),
+      builder: (context) => FilePreviewDialog(
+        filename: fileName,
+        rowIndex: index,
+        sheetTitle: selectedSheet!,
+        onRemove: () {
+          setState(() {
+            expenseData![index] = ExpenseRecord(
+                amount: expenseData![index].amount,
+                category: expenseData![index].category,
+                currency: expenseData![index].currency,
+                invoiceDate: expenseData![index].invoiceDate,
+                item: expenseData![index].item,
+                fileName: "",
+                uploadDate: expenseData![index].uploadDate,
+                finalAmount: expenseData![index].amount);
+            _calculateCategorySums();
+          });
+        },
+      ),
     );
   }
 
@@ -629,7 +650,7 @@ class _ExpenseListState extends State<ExpenseList>
             icon: const Icon(
               Icons.file_open,
             ),
-            onPressed: () => _showFilePreviewModal(context, record.fileName),
+            onPressed: () => _showFilePreviewModal(record.fileName, index),
           ),
         AmountText(
           expense: record,
@@ -798,22 +819,27 @@ class AmountText extends StatelessWidget {
 }
 
 class FilePreviewDialog extends StatefulWidget {
-  final String fileName;
+  final String? filename;
+  final int rowIndex;
+  final String sheetTitle;
+  final VoidCallback? onRemove;
 
-  const FilePreviewDialog({super.key, required this.fileName});
+  const FilePreviewDialog({
+    super.key,
+    this.filename,
+    required this.rowIndex,
+    required this.sheetTitle,
+    this.onRemove,
+  });
 
   @override
-  _FilePreviewDialogState createState() => _FilePreviewDialogState();
+  State<FilePreviewDialog> createState() => _FilePreviewDialogState();
 }
 
 class _FilePreviewDialogState extends State<FilePreviewDialog> {
-  Uint8List? _fileBytes;
+  Uint8List? _fileData;
   bool _isLoading = true;
   String? _errorMessage;
-  double _scale = 1.0;
-  double _previousScale = 1.0;
-  ImageProvider? _imageProvider;
-  Size? _originalImageSize;
 
   @override
   void initState() {
@@ -822,158 +848,218 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
   }
 
   Future<void> _loadFile() async {
+    if (widget.filename == null || widget.filename!.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'No file selected';
+      });
+      return;
+    }
+
     try {
-      final bytes = await GoogleDriveHelper.downloadFile(widget.fileName);
-
-      if (bytes == null) {
-        // Log specific scenario for file not found
-        if (kDebugMode) {
-          print(
-              'FilePreviewDialog: No file found with name ${widget.fileName}');
-        }
-        setState(() {
-          _errorMessage = 'File not found';
-          _isLoading = false;
-        });
-        return;
-      }
-
-      // Create image provider and get its size
-      final imageProvider = MemoryImage(bytes);
-      final completer = Completer<Size>();
-
-      imageProvider.resolve(const ImageConfiguration()).addListener(
-            ImageStreamListener(
-              (ImageInfo info, bool _) {
-                completer.complete(Size(
-                    info.image.width.toDouble(), info.image.height.toDouble()));
-              },
-              onError: (exception, stackTrace) {
-                completer.completeError(exception);
-              },
-            ),
-          );
-
+      final fileData = await GoogleDriveHelper.downloadFile(widget.filename!);
       setState(() {
-        _fileBytes = bytes;
-        _imageProvider = imageProvider;
-      });
-
-      _originalImageSize = await completer.future;
-
-      setState(() {
+        _fileData = fileData;
         _isLoading = false;
       });
-    } catch (error) {
-      // Log the detailed error
-      if (kDebugMode) {
-        print(
-            'FilePreviewDialog: Error loading file ${widget.fileName}: $error');
-      }
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load file: ${error.toString()}';
         _isLoading = false;
+        _errorMessage = 'Failed to load file: ${e.toString()}';
       });
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Calculate max dialog dimensions
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final maxDialogWidth = screenWidth * 0.9;
-    final maxDialogHeight = screenHeight * 0.8;
+  Future<void> _removeFile() async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade700),
+        ),
+      ),
+    );
 
-    return Dialog(
-      insetPadding: const EdgeInsets.all(10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_isLoading)
-            const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(),
-            )
-          else if (_errorMessage != null)
-            Text(_errorMessage!)
-          else if (_imageProvider != null && _originalImageSize != null)
-            Flexible(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  // Calculate the best fit while maintaining aspect ratio
-                  double width, height;
-                  final aspectRatio =
-                      _originalImageSize!.width / _originalImageSize!.height;
+    try {
+      // Perform file removal with rollback support
+      final success = await GoogleDriveHelper.removeFileWithRollback(
+        filename: widget.filename!,
+        additionalCleanupAction: () => GoogleSheetHelper.clearFileName(
+          sheetTitle: widget.sheetTitle,
+          rowIndex: widget.rowIndex,
+        ),
+      );
 
-                  if (aspectRatio > 1) {
-                    // Landscape image
-                    width = min(constraints.maxWidth, maxDialogWidth);
-                    height = width / aspectRatio;
+      // Close loading dialog
+      Navigator.of(context).pop();
 
-                    // Adjust height if it exceeds max height
-                    if (height > maxDialogHeight) {
-                      height = maxDialogHeight;
-                      width = height * aspectRatio;
-                    }
-                  } else {
-                    // Portrait or square image
-                    height = min(constraints.maxHeight, maxDialogHeight);
-                    width = height * aspectRatio;
+      if (success) {
+        // Call the onRemove callback if provided
+        widget.onRemove?.call();
 
-                    // Adjust width if it exceeds max width
-                    if (width > maxDialogWidth) {
-                      width = maxDialogWidth;
-                      height = width / aspectRatio;
-                    }
-                  }
+        // Close the dialog
+        Navigator.of(context).pop(true);
 
-                  return SizedBox(
-                    width: width,
-                    height: height,
-                    child: Center(
-                      child: GestureDetector(
-                        onScaleStart: (details) {
-                          _previousScale = _scale;
-                        },
-                        onScaleUpdate: (details) {
-                          setState(() {
-                            _scale = _previousScale * details.scale;
-                          });
-                        },
-                        child: InteractiveViewer(
-                          maxScale: 5.0,
-                          minScale: 0.5,
-                          child: Image(
-                            image: _imageProvider!,
-                            width: width,
-                            height: height,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
-          else
-            const Text('No image to display'),
-          Text(
-            widget.fileName,
-            style: Theme.of(context).textTheme.labelMedium,
+        // Show success snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('File removed successfully'),
+            backgroundColor: Colors.green.shade700,
+            duration: const Duration(seconds: 2),
           ),
-          const SizedBox(height: 16),
+        );
+      } else {
+        // Show error snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to remove file'),
+            backgroundColor: Colors.red.shade900,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show detailed error snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error removing file: ${e.toString()}'),
+          backgroundColor: Colors.red.shade900,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _showRemoveConfirmation() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove File'),
+        content: const Text('Are you sure you want to remove this file?'),
+        actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close confirmation dialog
+              _removeFile();
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  WidgetStateProperty.all<Color>(Colors.red.shade700),
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+            child: const Text('Remove'),
           ),
         ],
       ),
     );
   }
 
-  // Utility method to find minimum of two values
-  double min(double a, double b) => a < b ? a : b;
+  Widget _buildFileContent() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 50),
+            const SizedBox(height: 16),
+            Text(
+              _errorMessage!,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.red,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_fileData == null) {
+      return const Center(child: Text('No file to display'));
+    }
+
+    return Center(
+      child: InteractiveViewer(
+        maxScale: 5.0,
+        child: Image.memory(
+          _fileData!,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => const Center(
+            child: Text('Failed to load image'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: 500,
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Title Bar with Remove Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'File Preview',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  if (widget.filename != null && widget.filename!.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      tooltip: 'Remove File',
+                      onPressed: () => _showRemoveConfirmation(),
+                    ),
+                ],
+              ),
+            ),
+
+            // File Content
+            Expanded(
+              child: _buildFileContent(),
+            ),
+            Text(
+              widget.filename ?? '',
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+
+            // Close Button
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
