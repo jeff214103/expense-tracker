@@ -9,7 +9,7 @@ List<Map<String, dynamic>> items = [
         """Welcome to your expense management app. Track your daily expenses efficiently. 
 
 Add this app to your home screen by following the steps in the link below:""",
-    "image": "assets/images/1.png",
+    "image": "assets/images/itdog.png",
     "link": [
       {
         "name": "Tutorial link",
@@ -57,7 +57,7 @@ No receipt? You can also input expenses manually.""",
     "header": "Manage",
     "description":
         """The app creates a Google Sheet named "Expense Record" and a Google Drive folder called "Expense History (Automated)". You can find these files in your Google Drive. If you run out of space, you may need to delete them manually.""",
-    "image": "assets/images/4.png"
+    "image": "assets/images/5.png"
   },
   {
     "id": 6,

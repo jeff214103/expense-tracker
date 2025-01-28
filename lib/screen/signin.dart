@@ -57,7 +57,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                       Flexible(
                         flex: 1,
                         child: Image.asset(
-                          'assets/images/buymecoffee.png',
+                          'assets/images/itdog.png',
                           height: screenHeight * 0.25, // 25% of screen height
                         ),
                       ),
@@ -74,7 +74,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                 ),
                 // Add app version text
                 const Text(
-                  'Version 1.0.3', // Update this to your app's version
+                  'Version 1.0.4', // Update this to your app's version
                   style: TextStyle(
                     fontSize: 14, // Reduced font size for better fit
                     color: Colors.black54,

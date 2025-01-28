@@ -274,7 +274,7 @@ class _ExpenseListState extends State<ExpenseList>
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '${totalExpense.toStringAsFixed(2)} $selectedCurrency',
+                  '${CurrencyServiceCustom.formatCurrency(totalExpense, selectedCurrency?? "USD")} $selectedCurrency',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.red.shade900,
@@ -325,7 +325,7 @@ class _ExpenseListState extends State<ExpenseList>
               maxWidth: isMobileScreen ? 120 : 200,
             ),
             child: Text(
-              '${entry.value.toStringAsFixed(2)} $selectedCurrency',
+              '${CurrencyServiceCustom.formatCurrency(entry.value, selectedCurrency?? "USD")} $selectedCurrency',
               style: TextStyle(
                 color: entry.value > 0
                     ? Colors.red.shade700
@@ -790,13 +790,13 @@ class AmountText extends StatelessWidget {
                 children: <Widget>[
                   if (expense.finalAmount != expense.amount)
                     Text(
-                      '${expense.amount} ${expense.currency}',
+                      '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.amount)??0, expense.currency)} ${expense.currency}',
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   Text(
                     (showFinalAmount)
-                        ? '${expense.finalAmount} $settingCurrency'
-                        : '${expense.amount} ${expense.currency}',
+                        ? '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.finalAmount)??0, expense.currency)} $settingCurrency'
+                        : '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.amount)??0, expense.currency)} ${expense.currency}',
                     style: TextStyle(
                       color: Colors.blue.shade700,
                       fontWeight: FontWeight.bold,
