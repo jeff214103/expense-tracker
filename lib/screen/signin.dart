@@ -57,7 +57,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                       Flexible(
                         flex: 1,
                         child: Image.asset(
-                          'assets/images/itdog.png',
+                          'assets/images/1.png',
                           height: screenHeight * 0.25, // 25% of screen height
                         ),
                       ),

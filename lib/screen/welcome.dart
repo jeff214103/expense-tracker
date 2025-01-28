@@ -9,7 +9,7 @@ List<Map<String, dynamic>> items = [
         """Welcome to your expense management app. Track your daily expenses efficiently. 
 
 Add this app to your home screen by following the steps in the link below:""",
-    "image": "assets/images/itdog.png",
+    "image": "assets/images/1.png",
     "link": [
       {
         "name": "Tutorial link",
