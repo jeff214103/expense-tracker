@@ -425,7 +425,6 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
   String? selectedCurrency;
   Map<String, int> currencyFrequency = {};
   List<ExpenseRecord>? currentMonthData;
-  List<ExpenseRecord>? lastMonthData;
   bool isLoading = true;
 
   @override
@@ -437,15 +436,11 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
   Future<void> _fetchData() async {
     final now = DateTime.now();
     final currentMonth = DateFormat('y MMM').format(now);
-    final lastMonth =
-        DateFormat('y MMM').format(DateTime(now.year, now.month - 1));
 
     try {
       final currentData = await GoogleSheetHelper.getSheetData(
           'Expense ($currentMonth)',
           force: true);
-      final lastData =
-          await GoogleSheetHelper.getSheetData('Expense ($lastMonth)');
 
       // Calculate currency frequency from current month
       currencyFrequency.clear();
@@ -465,7 +460,6 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
 
       setState(() {
         currentMonthData = currentData;
-        lastMonthData = lastData;
         isLoading = false;
       });
     } catch (e) {
@@ -508,7 +502,6 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
     }
 
     final double? currentTotal = calculateTotal(currentMonthData);
-    final double? lastTotal = calculateTotal(lastMonthData);
     final currentRemain = CurrencyServiceCustom.convert(
             setting.income, setting.currency ?? "USD", selectedCurrency!) -
         CurrencyServiceCustom.convert(
@@ -517,14 +510,15 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
 
     final now = DateTime.now();
     final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
-    final remainingDays = daysInMonth - now.day;
+    final percentageConsumed = (currentTotal ?? 0.0) / (setting.income - setting.regularCost);
+    final remainingDays = daysInMonth - now.day + 1;
     final double dailyBudget =
         remainingDays > 0 ? currentRemain / remainingDays : 0;
 
     return {
       'currentTotal': currentTotal,
       'currentRemain': currentRemain,
-      'lastTotal': lastTotal,
+      'currentPercentage': percentageConsumed,
       'dailyBudget': dailyBudget,
     };
   }
@@ -584,14 +578,9 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 600;
 
-    final difference = (stats['currentTotal'] ?? 0) - (stats['lastTotal'] ?? 0);
-    final differenceText = (stats['lastTotal'] == null)
-        ? 'No last month data'
-        : (difference > 0
-            ? '${CurrencyServiceCustom.formatCurrency(difference, selectedCurrency ?? "USD")} MORE than last month'
-            : difference < 0
-                ? '${CurrencyServiceCustom.formatCurrency(-difference, selectedCurrency ?? "USD")} LESS than last month'
-                : 'Same as last month');
+    final spendingPercentageText = (stats['currentRemain']! < 0)
+        ? 'Overspending'
+        : '${(stats['currentPercentage']! * 100).toStringAsFixed(2)}% of monthly usable';
 
     return Flex(
       direction: isSmallScreen ? Axis.vertical : Axis.horizontal,
@@ -607,7 +596,7 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
               stats['currentTotal'] ?? 0,
               selectedCurrency ?? "USD",
             ),
-            subtitle: differenceText,
+            subtitle: spendingPercentageText,
           ),
         ),
         SizedBox(width: isSmallScreen ? 0 : 16, height: isSmallScreen ? 16 : 0),
