@@ -74,7 +74,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                 ),
                 // Add app version text
                 const Text(
-                  'Version 1.0.4', // Update this to your app's version
+                  'Version 1.0.5', // Update this to your app's version
                   style: TextStyle(
                     fontSize: 14, // Reduced font size for better fit
                     color: Colors.black54,

@@ -55,6 +55,9 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       'HOA fees',
     ],
     'Transportation': [
+      'Public transportation',
+      'Taxi/Uber',
+      'Prepaid card'
       'Car payment',
       'Car warranty',
       'Gas',
@@ -67,6 +70,10 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     'Food': [
       'Groceries',
       'Restaurants',
+      'Takeaway',
+      'From Friend',
+      'Street food',
+      'Delivery',
       'Pet food',
     ],
     'Utilities': [
@@ -119,6 +126,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       'Your college',
       'School supplies',
       'Books',
+      'Tuition',
+      'Exams',
     ],
     'Savings': [
       'Emergency fund',
@@ -146,6 +155,9 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       'Personal loans',
       'Student loans',
       'Other debt payments',
+    ],
+    'Other': [
+      'Other expenses',
     ],
   };
 
