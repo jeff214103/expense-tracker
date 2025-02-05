@@ -274,7 +274,7 @@ class _ExpenseListState extends State<ExpenseList>
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '${CurrencyServiceCustom.formatCurrency(totalExpense, selectedCurrency?? "USD")} $selectedCurrency',
+                  '${CurrencyServiceCustom.formatCurrency(totalExpense, selectedCurrency ?? "USD")} $selectedCurrency',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.red.shade900,
@@ -325,7 +325,7 @@ class _ExpenseListState extends State<ExpenseList>
               maxWidth: isMobileScreen ? 120 : 200,
             ),
             child: Text(
-              '${CurrencyServiceCustom.formatCurrency(entry.value, selectedCurrency?? "USD")} $selectedCurrency',
+              '${CurrencyServiceCustom.formatCurrency(entry.value, selectedCurrency ?? "USD")} $selectedCurrency',
               style: TextStyle(
                 color: entry.value > 0
                     ? Colors.red.shade700
@@ -681,35 +681,37 @@ class _ExpenseListState extends State<ExpenseList>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      record.item,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        record.item,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      record.category,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
+                      const SizedBox(height: 4),
+                      Text(
+                        record.category,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      DateFormat('d MMM y').format(record.invoiceDate),
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
+                      const SizedBox(height: 4),
+                      Text(
+                        DateFormat('d MMM y').format(record.invoiceDate),
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 _buildExpenseAction(record, index),
               ],
@@ -790,13 +792,13 @@ class AmountText extends StatelessWidget {
                 children: <Widget>[
                   if (expense.finalAmount != expense.amount)
                     Text(
-                      '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.amount)??0, expense.currency)} ${expense.currency}',
+                      '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.amount) ?? 0, expense.currency)} ${expense.currency}',
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   Text(
                     (showFinalAmount)
-                        ? '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.finalAmount)??0, expense.currency)} $settingCurrency'
-                        : '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.amount)??0, expense.currency)} ${expense.currency}',
+                        ? '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.finalAmount) ?? 0, expense.currency)} $settingCurrency'
+                        : '${CurrencyServiceCustom.formatCurrency(double.tryParse(expense.amount) ?? 0, expense.currency)} ${expense.currency}',
                     style: TextStyle(
                       color: Colors.blue.shade700,
                       fontWeight: FontWeight.bold,

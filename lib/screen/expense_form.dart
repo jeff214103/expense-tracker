@@ -30,9 +30,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController itemNameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
-  final TextEditingController receiptDateController = TextEditingController(
-    text: DateFormat('d MMM y').format(DateTime.now())
-  );
+  final TextEditingController receiptDateController =
+      TextEditingController(text: DateFormat('d MMM y').format(DateTime.now()));
 
   // Group related state variables together
   String? itemName;
@@ -57,7 +56,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     'Transportation': [
       'Public transportation',
       'Taxi/Uber',
-      'Prepaid card'
+      'Prepaid card',
       'Car payment',
       'Car warranty',
       'Gas',
@@ -195,7 +194,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       DateTime now = DateTime.now();
       submitDate = DateFormat('d MMM y').format(now);
       String receiptDateString = DateFormat('d MMM y').format(receiptDate!);
-      String uploadFilename = (uploadToGDrive)?'$itemName $receiptDateString':'';
+      String uploadFilename =
+          (uploadToGDrive) ? '$itemName $receiptDateString' : '';
 
       // Create a list of futures to execute
       List<Future> futures = [
@@ -274,15 +274,16 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     try {
       String mime = lookupMimeType(filename) ?? 'image/jpeg';
       final prompt = _buildGeminiPrompt();
-      final response = await _getGeminiResponse(mime, imageData, prompt, settings);
-      
+      final response =
+          await _getGeminiResponse(mime, imageData, prompt, settings);
+
       if (response?.text == null) {
         setState(() {
           geminiError = 'Failed to process receipt with AI';
         });
         return;
       }
-      
+
       final json = jsonDecode(response!.text!);
       _updateFormWithGeminiResponse(json);
     } catch (e) {
@@ -303,7 +304,9 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     return '''
 Retrieve the following information and return in strict json format without other text. If the information not found, fill with empty string.
 1. Item name (key: "item_name", type: string)  // It could be general item name, or the place is the item bought
-2. Category (key: "category", type: string)    // The category must be one of the following [${categories.entries.expand((entry) {return entry.value;}).join(', ')}]
+2. Category (key: "category", type: string)    // The category must be one of the following [${categories.entries.expand((entry) {
+      return entry.value;
+    }).join(', ')}]
 3. Price (key: "price", type : number) // The price must be a number.  If there is multiple items, the price must be the total price
 4. Currency Code (key: "currency", type: string) // The currency code must be one of the following [${CurrencyServiceCustom.getAllCurrencies().join(', ')}]. Analyze the currency by the location of the receipt.  If there is no information, return as ${Provider.of<SettingProvider>(context, listen: false).currency}.
 5. Receipt Date (key: "receipt_date", format: d MMM YYYY) // The receipt date must be in the format of "d MMM YYYY"
@@ -319,20 +322,16 @@ Strict json format:
 ''';
   }
 
-  Future<GenerateContentResponse?> _getGeminiResponse(
-    String mime, 
-    Uint8List imageData, 
-    String prompt,
-    SettingProvider settings
-  ) {
+  Future<GenerateContentResponse?> _getGeminiResponse(String mime,
+      Uint8List imageData, String prompt, SettingProvider settings) {
     final dataPart = DataPart(mime, imageData);
     final parts = [TextPart(prompt), dataPart];
-    
+
     final model = GenerativeModel(
-      model: settings.geminiModel,
-      apiKey: settings.geminiKey,
-      generationConfig: GenerationConfig(responseMimeType: 'application/json')
-    );
+        model: settings.geminiModel,
+        apiKey: settings.geminiKey,
+        generationConfig:
+            GenerationConfig(responseMimeType: 'application/json'));
 
     return model.generateContent([Content.multi(parts)]);
   }
@@ -345,7 +344,8 @@ Strict json format:
 
       if (json['category']?.isNotEmpty == true) {
         final categoryValue = json['category'];
-        if (categories.entries.any((entry) => entry.value.contains(categoryValue))) {
+        if (categories.entries
+            .any((entry) => entry.value.contains(categoryValue))) {
           category = categoryValue;
         }
       }
@@ -368,7 +368,7 @@ Strict json format:
     try {
       final parsedDate = DateFormat('d MMM y').parse(dateStr);
       receiptDate = parsedDate;
-      receiptDateController.text =  DateFormat('d MMM y').format(parsedDate);
+      receiptDateController.text = DateFormat('d MMM y').format(parsedDate);
     } catch (e) {
       if (kDebugMode) {
         print('Invalid date format: $dateStr');
@@ -408,6 +408,7 @@ Strict json format:
                             ImageSelector(
                               state: state,
                               onChange: (filename, file) {
+                                filename = filename;
                                 receiptImage = file;
                                 if (file != null && filename != null) {
                                   _processWithGemini(filename, file);
@@ -638,7 +639,6 @@ Strict json format:
                       const SizedBox(
                         height: 15,
                       ),
-                      
                       FilledButton(
                         onPressed: _submitForm,
                         child: const Text('Submit'),
