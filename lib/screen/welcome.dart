@@ -34,6 +34,10 @@ Note: You are responsible for your device and Google account security. The app d
         "name": "privacy policy",
         "url": Uri.parse('/privacy-policy').toString(),
       },
+      {
+        "name": "terms of service",
+        "url":  Uri.parse('/service-agreement').toString(),
+      }
     ]
   },
   {

@@ -1,5 +1,6 @@
 import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:expense_tracker_web/screen/privacy_policy.dart';
+import 'package:expense_tracker_web/screen/service_agreement.dart';
 import 'package:expense_tracker_web/screen/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const GoogleSignInPage(),
         '/privacy-policy': (context) => const PrivacyPolicyScreen(),
+        '/service-agreement': (context) => const ServiceAgreementScreen(),
       },
     );
   }
