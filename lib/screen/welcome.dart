@@ -73,10 +73,13 @@ No receipt? You can also input expenses manually.""",
       {
         "name": "github",
         "url": "https://github.com/jeff214103/resume-generator",
-      },
+      }, 
       {
+        "name": "ITDOGTICS",
+        "url": "https://itdogtics.com/",
+      }, {
         "name": "about author",
-        "url": "https://jeff214103.github.io/personal-webpage/",
+        "url": "https://author.itdogtics.com/",
       },
     ],
     // Replace with the actual GitHub repository link
