@@ -17,6 +17,13 @@ class SettingProvider with ChangeNotifier {
     _geminiApiKey,
     _geminiModelKey,
   ];
+  static const List<String> _availableModels = [
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+  ];
+
+  List<String> get availableModels => _availableModels;
+
   bool _initialized = false;
   void reset() {
     _initialized = false;
@@ -76,6 +83,10 @@ class SettingProvider with ChangeNotifier {
         double.tryParse(settings[_regularCostKey]?.toString() ?? '0.0') ?? 0.0;
     _geminiKey = settings[_geminiApiKey] ?? '';
     _geminiModel = settings[_geminiModelKey] ?? '';
+    
+    if (_geminiModel != '' && !_availableModels.contains(_geminiModel)) {
+      _geminiModel = availableModels.first;
+    }
 
     if (unsynced) {
       if (kDebugMode) {

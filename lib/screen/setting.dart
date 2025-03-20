@@ -177,7 +177,10 @@ class _SettingScreenState extends State<SettingScreen>
     String currentModel,
     Function(String) onModelSelect,
   ) {
-    final models = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+    final models = Provider.of<SettingProvider>(context, listen: false).availableModels;
+    if (!models.contains(currentModel)) {
+      currentModel = models.first;
+    }
 
     showDialog(
       context: context,
