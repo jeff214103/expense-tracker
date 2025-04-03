@@ -296,7 +296,7 @@ class GoogleSheetHelper {
 
     if (!sheetExists) {
       // Ensure spreadsheet exists
-      initializeExchangeRatesSheet(sheetsApi, spreadsheetId, sheetTitle);
+      await initializeExchangeRatesSheet(sheetsApi, spreadsheetId, sheetTitle);
     }
 
     // Read exchange rates from the sheet
