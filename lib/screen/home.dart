@@ -46,6 +46,10 @@ class _HomePageState extends State<HomePage>
   late AnimationController _animationController;
   String? _errorMessage;
 
+  Future applicationLoad() {
+     return configureApplication(context).then((_) => CurrencyServiceCustom.updateExchangeRates());
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,10 +61,7 @@ class _HomePageState extends State<HomePage>
     );
 
     // Initialize exchange rates when home page loads
-    applicationLoaded = Future.wait([
-      CurrencyServiceCustom.updateExchangeRates(),
-      configureApplication(context),
-    ]);
+    applicationLoaded = applicationLoad();
   }
 
   Future<void> configureApplication(BuildContext context) async {
@@ -211,10 +212,7 @@ class _HomePageState extends State<HomePage>
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => setState(() {
-                            applicationLoaded = Future.wait([
-                              CurrencyServiceCustom.updateExchangeRates(),
-                              configureApplication(context),
-                            ]);
+                            applicationLoaded = applicationLoad();
                           }),
                           child: const Text('Retry'),
                         ),
@@ -408,6 +406,7 @@ class DashboardLayout extends StatelessWidget {
               )
             ],
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );

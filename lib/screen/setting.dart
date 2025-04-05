@@ -40,14 +40,14 @@ class _SettingScreenState extends State<SettingScreen>
       context: context,
       barrierDismissible: false,
       builder: (context) => const LoadingDialogBody(
-        text: 'Action in progress...',),
+        text: 'Action in progress...',
+      ),
     );
 
     if (callback != null) {
       await callback();
     }
     Navigator.of(context).pop();
-
   }
 
   Future<void> _showNumberInputDialog({
@@ -112,7 +112,6 @@ class _SettingScreenState extends State<SettingScreen>
                 final value = double.parse(controller.text);
                 Navigator.of(context).pop();
                 _showActionWaitingDialog(callback: () => onSave(value));
-
               }
             },
             child: const Text('Save'),
@@ -177,7 +176,8 @@ class _SettingScreenState extends State<SettingScreen>
     String currentModel,
     Function(String) onModelSelect,
   ) {
-    final models = Provider.of<SettingProvider>(context, listen: false).availableModels;
+    final models =
+        Provider.of<SettingProvider>(context, listen: false).availableModels;
     if (!models.contains(currentModel)) {
       currentModel = models.first;
     }
@@ -219,11 +219,13 @@ class _SettingScreenState extends State<SettingScreen>
             children: [
               _buildGeneralSettingsCard(context, settings),
               const SizedBox(height: 16),
-              _buildAIAssistanceCard(context, settings),
+              if (settings.currency != null)
+                _buildAIAssistanceCard(context, settings),
               const SizedBox(height: 16),
               if (settings.currency != null && widget.isFirstTime)
                 _buildGetStartedButton(context),
-              _buildExchangeRatesCard(context, settings),
+              if (settings.currency != null && !widget.isFirstTime)
+                _buildExchangeRatesCard(context, settings),
               const SizedBox(height: 16),
             ],
           ),
@@ -255,7 +257,10 @@ class _SettingScreenState extends State<SettingScreen>
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
                   'You must choose the currency you use for your expenses. Click on this section to set it. You can always change it later.',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -282,7 +287,7 @@ class _SettingScreenState extends State<SettingScreen>
               context,
               title: 'Income',
               subtitle: settings.income.toString(),
-              description: 'Your monthly income.',
+              description: '(OPTIONAL) Your monthly income.',
               onTap: () => _showNumberInputDialog(
                 context: context,
                 title: 'Income',
@@ -297,7 +302,7 @@ class _SettingScreenState extends State<SettingScreen>
               context,
               title: 'Regular Cost',
               subtitle: settings.regularCost.toString(),
-              description: 'Your monthly cost deducted from your income.',
+              description: '(OPTIONAL) Your monthly cost deducted from your income.',
               onTap: () => _showNumberInputDialog(
                 context: context,
                 title: 'Regular Cost',
