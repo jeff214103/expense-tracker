@@ -1,15 +1,32 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:expense_tracker_web/util/google_sheet.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingProvider with ChangeNotifier {
+  SettingProvider() {
+    SharedPreferences.getInstance().then((prefs) {
+      String? language = prefs.getString('language');
+      _language = (language == null)
+          ? PlatformDispatcher.instance.locales.first
+          : Locale(language);
+      if (!AppLocalizations.supportedLocales.contains(_language)) {
+        _language = const Locale('en');
+      }
+      notifyListeners();
+    });
+  }
   static const String _currencyKey = 'currency';
   static const String _incomeKey = 'income';
   static const String _regularCostKey = 'regularCost';
   static const String _geminiApiKey = 'geminiApiKey';
   static const String _geminiModelKey = 'geminiModel';
   static const String _uploadToGDriveKey = 'uploadToGDrive';
-  static const String _currencyCalculationSourceKey = 'currencyCalculationSource';
+  static const String _currencyCalculationSourceKey =
+      'currencyCalculationSource';
   static const List<String> _settingKeysToSheet = [
     _currencyKey,
     _incomeKey,
@@ -39,6 +56,7 @@ class SettingProvider with ChangeNotifier {
   String _geminiModel = '';
   bool _uploadToGDrive = true; // default to true
   String? _currencyCalculationSource;
+  Locale _language = PlatformDispatcher.instance.locales.first;
 
   String? get currency => _currency;
   double get income => _income;
@@ -47,6 +65,7 @@ class SettingProvider with ChangeNotifier {
   String get geminiModel => _geminiModel;
   bool get uploadToGDrive => _uploadToGDrive;
   String? get currencyCalculationSource => _currencyCalculationSource;
+  Locale get language => _language;
 
   Future<void> init() async {
     if (_initialized) {
@@ -54,7 +73,8 @@ class SettingProvider with ChangeNotifier {
     }
     final prefs = await SharedPreferences.getInstance();
     _uploadToGDrive = prefs.getBool(_uploadToGDriveKey) ?? true;
-    _currencyCalculationSource = prefs.getString(_currencyCalculationSourceKey) ?? 'USD';
+    _currencyCalculationSource =
+        prefs.getString(_currencyCalculationSourceKey) ?? 'USD';
 
     // First, initialize settings and get row indices
     await GoogleSheetHelper.initializeSettings(sheetKeys);
@@ -83,7 +103,7 @@ class SettingProvider with ChangeNotifier {
         double.tryParse(settings[_regularCostKey]?.toString() ?? '0.0') ?? 0.0;
     _geminiKey = settings[_geminiApiKey] ?? '';
     _geminiModel = settings[_geminiModelKey] ?? '';
-    
+
     if (_geminiModel != '' && !_availableModels.contains(_geminiModel)) {
       _geminiModel = availableModels.first;
     }
@@ -161,6 +181,13 @@ class SettingProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_currencyCalculationSourceKey, source);
     _currencyCalculationSource = source;
+    notifyListeners();
+  }
+
+  Future<void> updateLanguage(Locale locale) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', locale.languageCode);
+    _language = locale;
     notifyListeners();
   }
 }

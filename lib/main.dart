@@ -3,6 +3,8 @@ import 'package:expense_tracker_web/screen/privacy_policy.dart';
 import 'package:expense_tracker_web/screen/service_agreement.dart';
 import 'package:expense_tracker_web/screen/signin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -25,13 +27,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Expense Tracker',
-      routes: {
-        '/': (context) => const GoogleSignInPage(),
-        '/privacy-policy': (context) => const PrivacyPolicyScreen(),
-        '/service-agreement': (context) => const ServiceAgreementScreen(),
-      },
+    return Consumer<SettingProvider>(
+      builder: (context, settings, child) => MaterialApp(
+        title: 'Expense Tracker',
+        locale: settings.language,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        routes: {
+          '/': (context) => const GoogleSignInPage(),
+          '/privacy-policy': (context) => const PrivacyPolicyScreen(),
+          '/service-agreement': (context) => const ServiceAgreementScreen(),
+        },
+      ),
     );
   }
 }

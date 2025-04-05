@@ -4,6 +4,7 @@ import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:expense_tracker_web/util/google_drive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:expense_tracker_web/util/google_sheet.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
 import 'package:expense_tracker_web/util/currency_service.dart';
@@ -72,11 +73,13 @@ class _ExpenseListState extends State<ExpenseList>
         setState(() => selectedSheet = sheets.first);
         await _loadExpenseData(selectedSheet!);
       } else {
-        setState(() => errorMessage = 'No spreadsheets available');
+        setState(() => errorMessage =
+            AppLocalizations.of(context)!.noSpreadsheetsAvailable);
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Failed to load spreadsheets: ${e.toString()}';
+        errorMessage = AppLocalizations.of(context)!
+            .failedToLoadSpreadsheets(e.toString());
         _animationController.forward();
       });
     } finally {
@@ -99,7 +102,8 @@ class _ExpenseListState extends State<ExpenseList>
       });
     } catch (e) {
       setState(() {
-        errorMessage = 'Failed to load expense data: ${e.toString()}';
+        errorMessage =
+            AppLocalizations.of(context)!.failedToLoadExpenseData(e.toString());
         _animationController.forward();
       });
     } finally {
@@ -113,7 +117,8 @@ class _ExpenseListState extends State<ExpenseList>
     currencyFrequency.clear();
 
     if (expenseData == null || expenseData!.isEmpty) {
-      setState(() => errorMessage = 'No expense records found');
+      setState(() =>
+          errorMessage = AppLocalizations.of(context)!.noExpenseRecordsFound);
       return;
     }
 
@@ -170,8 +175,8 @@ class _ExpenseListState extends State<ExpenseList>
   Widget _buildErrorNotification() {
     return errorMessage != null
         ? Semantics(
-            label: 'Error notification',
-            hint: 'An error occurred while loading data',
+            label: AppLocalizations.of(context)!.errorNotification,
+            hint: AppLocalizations.of(context)!.anErrorOccurredWhileLoadingData,
             child: Container(
               width: double.infinity,
               color: Colors.red.shade100,
@@ -206,7 +211,7 @@ class _ExpenseListState extends State<ExpenseList>
     final isMobileScreen = MediaQuery.of(context).size.width < 768;
 
     return CustomScafold(
-      title: 'Expense List',
+      title: AppLocalizations.of(context)!.expenseList,
       child: Column(
         children: [
           _buildErrorNotification(),
@@ -239,11 +244,11 @@ class _ExpenseListState extends State<ExpenseList>
         children: [
           ListTile(
             title: Text(
-              'Category Summary',
+              AppLocalizations.of(context)!.categorySummary,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             trailing: IconButton(
-              tooltip: 'Change Currency',
+              tooltip: AppLocalizations.of(context)!.changeCurrency,
               icon: const Icon(Icons.currency_exchange),
               onPressed: _showCurrencyPicker,
             ),
@@ -269,8 +274,8 @@ class _ExpenseListState extends State<ExpenseList>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Total Expense',
+                Text(
+                  AppLocalizations.of(context)!.totalExpense,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -341,10 +346,10 @@ class _ExpenseListState extends State<ExpenseList>
 
   Widget _buildCategoryPieChart() {
     if (categorySums.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'No data for pie chart',
-          style: TextStyle(color: Colors.grey),
+          AppLocalizations.of(context)!.noDataForPieChart,
+          style: const TextStyle(color: Colors.grey),
         ),
       );
     }
@@ -387,11 +392,11 @@ class _ExpenseListState extends State<ExpenseList>
             child: _buildMonthSelector(),
           ),
           if (filteredExpenses == null || filteredExpenses.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Text(
-                'No expense records found',
-                style: TextStyle(color: Colors.grey),
+                AppLocalizations.of(context)!.noExpenseRecordsFound,
+                style: const TextStyle(color: Colors.grey),
               ),
             )
           else if (isMobile)
@@ -437,7 +442,7 @@ class _ExpenseListState extends State<ExpenseList>
       isExpanded: true,
       value: selectedSheet,
       decoration: InputDecoration(
-        labelText: 'Select Month${sheetsNames.isEmpty ? ' (No history)' : ''}',
+        labelText: AppLocalizations.of(context)!.selectMonth,
         border: const OutlineInputBorder(),
         prefixIcon: const Icon(Icons.calendar_month),
       ),
@@ -500,26 +505,27 @@ class _ExpenseListState extends State<ExpenseList>
 
         return AlertDialog(
           title: Text(
-            'Final Payment Amount in ${settingProvider.currency}',
+            AppLocalizations.of(context)!
+                .finalPaymentAmount(settingProvider.currency ?? 'null'),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                autofocus: true,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Final Amount (${settingProvider.currency})',
-                  hintText: 'Enter final paid amount',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  labelText: AppLocalizations.of(context)!.editAmount,
                 ),
                 controller: TextEditingController(text: newAmount),
-                onChanged: (value) => newAmount = value,
+                onChanged: (value) {
+                  newAmount = value;
+                },
               ),
               Text(
-                "Input your final payment amount in ${settingProvider.currency}, and all calcuation will be based on this amount and the setting currency.",
+                AppLocalizations.of(context)!.inputFinalPaymentAmount(
+                    settingProvider.currency ?? 'null'),
                 style: TextStyle(color: Colors.grey.shade600),
               ),
             ],
@@ -527,12 +533,11 @@ class _ExpenseListState extends State<ExpenseList>
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(null),
-              child:
-                  Text('Cancel', style: TextStyle(color: Colors.red.shade900)),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.of(context).pop(newAmount),
-              child: const Text('Update'),
+              child: Text(AppLocalizations.of(context)!.save),
             ),
           ],
         );
@@ -583,7 +588,8 @@ class _ExpenseListState extends State<ExpenseList>
         // Show success snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Final amount updated successfully'),
+            content: Text(
+                AppLocalizations.of(context)!.finalAmountUpdatedSuccessfully),
             backgroundColor: Colors.green.shade700,
             duration: const Duration(seconds: 2),
           ),
@@ -592,7 +598,8 @@ class _ExpenseListState extends State<ExpenseList>
         // Show error snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Failed to update final amount'),
+            content:
+                Text(AppLocalizations.of(context)!.failedToUpdateFinalAmount),
             backgroundColor: Colors.red.shade900,
             duration: const Duration(seconds: 2),
           ),
@@ -605,7 +612,8 @@ class _ExpenseListState extends State<ExpenseList>
       // Show detailed error snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error updating final amount: ${e.toString()}'),
+          content: Text(AppLocalizations.of(context)!
+              .errorUpdatingFinalAmount(e.toString())),
           backgroundColor: Colors.red.shade900,
           duration: const Duration(seconds: 3),
         ),
@@ -646,7 +654,7 @@ class _ExpenseListState extends State<ExpenseList>
           IconButton(
             iconSize: 16,
             color: Colors.grey.shade600,
-            tooltip: 'View receipt',
+            tooltip: AppLocalizations.of(context)!.viewReceipt,
             icon: const Icon(
               Icons.file_open,
             ),
@@ -668,8 +676,8 @@ class _ExpenseListState extends State<ExpenseList>
     if (isVerySmallScreen) {
       // Compact vertical layout for very small screens
       return Semantics(
-        label: 'Expense record',
-        hint: 'Expense details',
+        label: AppLocalizations.of(context)!.expenseRecord,
+        hint: AppLocalizations.of(context)!.expenseDetails,
         child: Card(
           elevation: 2,
           margin: const EdgeInsets.symmetric(
@@ -723,8 +731,8 @@ class _ExpenseListState extends State<ExpenseList>
 
     // Regular layout for mobile and desktop
     return Semantics(
-      label: 'Expense record',
-      hint: 'Expense details',
+      label: AppLocalizations.of(context)!.expenseRecord,
+      hint: AppLocalizations.of(context)!.expenseDetails,
       child: Card(
         elevation: 2,
         margin: const EdgeInsets.symmetric(
@@ -779,7 +787,7 @@ class AmountText extends StatelessWidget {
         expense.finalAmount != expense.amount);
 
     return Tooltip(
-      message: 'Final Charge Amount',
+      message: AppLocalizations.of(context)!.finalChargeAmount,
       child: InkWell(
         onTap: onPressed,
         child: Row(
@@ -853,7 +861,7 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
     if (widget.filename == null || widget.filename!.isEmpty) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'No file selected';
+        _errorMessage = AppLocalizations.of(context)!.noFileSelected;
       });
       return;
     }
@@ -867,7 +875,8 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Failed to load file: ${e.toString()}';
+        _errorMessage =
+            AppLocalizations.of(context)!.failedToLoadFile(e.toString());
       });
     }
   }
@@ -907,7 +916,8 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
         // Show success snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('File removed successfully'),
+            content:
+                Text(AppLocalizations.of(context)!.fileRemovedSuccessfully),
             backgroundColor: Colors.green.shade700,
             duration: const Duration(seconds: 2),
           ),
@@ -916,7 +926,7 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
         // Show error snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Failed to remove file'),
+            content: Text(AppLocalizations.of(context)!.failedToRemoveFile),
             backgroundColor: Colors.red.shade900,
             duration: const Duration(seconds: 2),
           ),
@@ -929,7 +939,9 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
       // Show detailed error snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error removing file: ${e.toString()}'),
+          content: Text(
+            AppLocalizations.of(context)!.errorRemovingFile(e.toString()),
+          ),
           backgroundColor: Colors.red.shade900,
           duration: const Duration(seconds: 3),
         ),
@@ -941,12 +953,13 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove File'),
-        content: const Text('Are you sure you want to remove this file?'),
+        title: Text(AppLocalizations.of(context)!.removeFile),
+        content: Text(
+            AppLocalizations.of(context)!.areYouSureYouWantToRemoveThisFile),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -958,7 +971,7 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
                   WidgetStateProperty.all<Color>(Colors.red.shade700),
               foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
             ),
-            child: const Text('Remove'),
+            child: Text(AppLocalizations.of(context)!.remove),
           ),
         ],
       ),
@@ -990,7 +1003,7 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
     }
 
     if (_fileData == null) {
-      return const Center(child: Text('No file to display'));
+      return Center(child: Text(AppLocalizations.of(context)!.noFileToDisplay));
     }
 
     return Center(
@@ -999,8 +1012,8 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
         child: Image.memory(
           _fileData!,
           fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) => const Center(
-            child: Text('Failed to load image'),
+          errorBuilder: (context, error, stackTrace) => Center(
+            child: Text(AppLocalizations.of(context)!.failedToLoadImage),
           ),
         ),
       ),
@@ -1028,13 +1041,13 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'File Preview',
+                    AppLocalizations.of(context)!.filePreview,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   if (widget.filename != null && widget.filename!.isNotEmpty)
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      tooltip: 'Remove File',
+                      tooltip: AppLocalizations.of(context)!.removeFile,
                       onPressed: () => _showRemoveConfirmation(),
                     ),
                 ],
@@ -1056,7 +1069,7 @@ class _FilePreviewDialogState extends State<FilePreviewDialog> {
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Close'),
+                child: Text(AppLocalizations.of(context)!.close),
               ),
             ),
           ],

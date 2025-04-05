@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/link.dart';
 
 List<Map<String, dynamic>> items = [
   {
     "id": 1,
-    "header": "Welcome",
-    "description":
-        """Welcome to your expense management app. Track your daily expenses efficiently. 
-
-Add this app to your home screen by following the steps in the link below:""",
+    "header": "welcome",
+    "description": "welcomeDescription",
     "image": "assets/images/1.png",
     "link": [
       {
-        "name": "Tutorial link",
+        "name": "tutorialLink",
         "url":
             "https://www.howtogeek.com/196087/how-to-add-websites-to-the-home-screen-on-any-smartphone-or-tablet/"
       }
@@ -20,54 +18,42 @@ Add this app to your home screen by following the steps in the link below:""",
   },
   {
     "id": 2,
-    "header": "Privacy",
-    "description":
-        """Your data privacy matters. Here's where your information is stored:
-
-1. Google Drive - Receipt images
-2. Google Sheets - Expense records, Exchange Rates, Settings
-
-Note: You are responsible for your device and Google account security. The app developer is not liable for any data breaches due to your security settings.""",
+    "header": "privacy",
+    "description": "privacyDescription",
     "image": "assets/images/2.png",
     "link": [
       {
-        "name": "privacy policy",
+        "name": "privacyPolicy",
         "url": Uri.parse('/privacy-policy').toString(),
       },
       {
-        "name": "terms of service",
+        "name": "termsOfService",
         "url":  Uri.parse('/service-agreement').toString(),
       }
     ]
   },
   {
     "id": 3,
-    "header": "Input",
-    "description":
-        """Getting started is easy! Scan your receipt, and if you've set up Gemini, the information will be extracted automatically. You can review and adjust the details as needed. 
- 
-No receipt? You can also input expenses manually.""",
+    "header": "input",
+    "description": "inputDescription",
     "image": "assets/images/3.png"
   },
   {
     "id": 4,
-    "header": "View",
-    "description":
-        "Easily track your spending history. All amounts are shown in your preferred currency. Currency conversion rates are preset and may need manual updates.",
+    "header": "view",
+    "description": "viewDescription",
     "image": "assets/images/4.png"
   },
   {
     "id": 5,
-    "header": "Manage",
-    "description":
-        """The app creates a Google Sheet named "Expense Record" and a Google Drive folder called "Expense History (Automated)". You can find these files in your Google Drive. If you run out of space, you may need to delete them manually.""",
+    "header": "manage",
+    "description": "manageDescription",
     "image": "assets/images/5.png"
   },
   {
     "id": 6,
-    "header": "Author",
-    "description":
-        "This project is open source on GitHub. Contributions are welcome! If you find this app helpful, consider supporting the developer with a coffee!",
+    "header": "author",
+    "description": "authorDescription",
     "image": "assets/images/6.png",
     "link": [
       {
@@ -75,19 +61,18 @@ No receipt? You can also input expenses manually.""",
         "url": "https://github.com/jeff214103/resume-generator",
       }, 
       {
-        "name": "ITDOGTICS",
+        "name": "itdogtics",
         "url": "https://itdogtics.com/",
       }, {
-        "name": "about author",
+        "name": "aboutAuthor",
         "url": "https://author.itdogtics.com/",
       },
     ],
-    // Replace with the actual GitHub repository link
   },
   {
     "id": 7,
-    "header": "Almost There",
-    "description": "You're all set! Let's start managing your expenses.",
+    "header": "almostThere",
+    "description": "almostThereDescription",
     "image": "assets/images/7.png"
   },
 ];
@@ -105,8 +90,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   List<Widget> indicator() => List<Widget>.generate(
         items.length,
         (index) => Semantics(
-          label: 'Page $index indicator',
-          hint: 'Navigate to page $index',
+          label: AppLocalizations.of(context)!.pageIndicatorLabel(index),
+          hint: AppLocalizations.of(context)!.pageIndicatorHint(index),
           child: GestureDetector(
             onTap: () {
               _pageViewController.animateToPage(
@@ -169,8 +154,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               itemCount: items.length,
               itemBuilder: (BuildContext context, int index) {
                 return WelcomePageLayout(
-                  header: items[index]['header'],
-                  description: items[index]['description'],
+                  header: AppLocalizations.of(context)!.welcomePageHeader(items[index]['header']),
+                  description: AppLocalizations.of(context)!.welcomePageDescription(items[index]['description']),
                   link: items[index]['link'],
                   image: items[index]['image'],
                   onFinish: (index == items.length - 1)
@@ -196,19 +181,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       child: (currentPage != items.length - 1)
                           ? (widget.allowSkip == true)
                               ? Semantics(
-                                  label: 'Skip tutorial',
-                                  hint: 'Skip the welcome tutorial',
+                                  label: AppLocalizations.of(context)!.skipTutorial,
+                                  hint: AppLocalizations.of(context)!.skipTutorialHint,
                                   child: ElevatedButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    child: const Text('SKIP'),
+                                    child: Text(AppLocalizations.of(context)!.skip.toUpperCase()),
                                   ),
                                 )
                               : const SizedBox.shrink()
                           : Semantics(
-                              label: 'Go back to first page',
-                              hint: 'Return to the first page of the tutorial',
+                              label: AppLocalizations.of(context)!.goBackToFirstPage,
+                              hint: AppLocalizations.of(context)!.goBackToFirstPageHint,
                               child: ElevatedButton(
                                 onPressed: () {
                                   _pageViewController.animateToPage(
@@ -217,7 +202,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                     curve: Curves.easeInOut,
                                   );
                                 },
-                                child: const Text('Back'),
+                                child: Text(AppLocalizations.of(context)!.back),
                               ),
                             ),
                     ),
@@ -235,11 +220,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       width: 100,
                       child: Semantics(
                         label: currentPage != items.length - 1
-                            ? 'Next page'
-                            : 'Finish tutorial',
+                            ? AppLocalizations.of(context)!.nextPage
+                            : AppLocalizations.of(context)!.finishTutorial,
                         hint: currentPage != items.length - 1
-                            ? 'Go to the next page'
-                            : 'Complete the welcome tutorial',
+                            ? AppLocalizations.of(context)!.nextPageHint
+                            : AppLocalizations.of(context)!.finishTutorialHint,
                         child: FilledButton(
                           onPressed: () {
                             if (currentPage != items.length - 1) {
@@ -253,7 +238,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             }
                           },
                           child: Text(
-                            (currentPage != items.length - 1) ? 'NEXT' : 'GO',
+                            (currentPage != items.length - 1) 
+                              ? AppLocalizations.of(context)!.next.toUpperCase() 
+                              : AppLocalizations.of(context)!.go.toUpperCase(),
                           ),
                         ),
                       ),
@@ -283,7 +270,7 @@ class WelcomePageLayout extends StatelessWidget {
       required this.description,
       this.onFinish});
 
-  List<Widget> buildLinks(List<Map<String, String>> links) {
+  List<Widget> buildLinks(BuildContext context, List<Map<String, String>> links) {
     return [
       for (final link in links)
         Center(
@@ -292,7 +279,7 @@ class WelcomePageLayout extends StatelessWidget {
             target: LinkTarget.blank,
             builder: (context, followLink) => TextButton(
               onPressed: followLink,
-              child: Text(link['name'] ?? ''),
+              child: Text(AppLocalizations.of(context)!.welcomePageLinkName(link['name'] ?? '')),
             ),
           ),
         ),
@@ -354,14 +341,14 @@ class WelcomePageLayout extends StatelessWidget {
                       ),
                       if (link != null)
                         Wrap(
-                          children: buildLinks(link!),
+                          children: buildLinks(context, link!),
                         ),
                       if (onFinish != null)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: FilledButton(
                               onPressed: onFinish,
-                              child: const Text('Get Started')),
+                              child: Text(AppLocalizations.of(context)!.getStarted)),
                         ),
                     ],
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:expense_tracker_web/screen/home.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
@@ -10,7 +11,7 @@ class SuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScafold(
-      title: 'SUCCESS',
+      title: AppLocalizations.of(context)!.success,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -35,7 +36,7 @@ class SuccessScreen extends StatelessWidget {
                             )),
                     (Route<dynamic> route) => false);
               },
-              child: const Text('Done'),
+              child: Text(AppLocalizations.of(context)!.done),
             ),
           ],
         ),

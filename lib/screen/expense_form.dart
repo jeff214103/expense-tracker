@@ -17,6 +17,7 @@ import 'package:expense_tracker_web/widgets/dialog_body.dart';
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:provider/provider.dart';
 import 'package:expense_tracker_web/provider/setting_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -379,7 +380,7 @@ Strict json format:
   @override
   Widget build(BuildContext context) {
     return CustomScafold(
-      title: 'Expense Form',
+      title: AppLocalizations.of(context)!.expenseForm,
       child: Center(
         child: Container(
           alignment: Alignment.center,
@@ -397,7 +398,7 @@ Strict json format:
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Expense Form',
+                        AppLocalizations.of(context)!.expenseForm,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 16),
@@ -419,7 +420,7 @@ Strict json format:
                               const SizedBox(height: 10),
                               const CircularProgressIndicator(),
                               const SizedBox(height: 5),
-                              const Text('Processing receipt with AI...'),
+                              Text(AppLocalizations.of(context)!.processingReceiptWithAI),
                             ],
                             if (geminiError != null) ...[
                               const SizedBox(height: 10),
@@ -435,7 +436,7 @@ Strict json format:
                         validator: (value) {
                           if (uploadToGDrive &&
                               (receiptImage == null || receiptImage!.isEmpty)) {
-                            return 'Please select a receipt image';
+                            return AppLocalizations.of(context)!.pleaseSelectReceiptImage;
                           }
                           return null;
                         },
@@ -448,13 +449,13 @@ Strict json format:
                         readOnly: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter the receipt date';
+                            return AppLocalizations.of(context)!.pleaseEnterReceiptDate;
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          labelText: "Date",
+                          labelText: AppLocalizations.of(context)!.date,
                           prefixIcon: IconButton(
                             onPressed: () {
                               pickDate(callback: (value) {
@@ -480,14 +481,14 @@ Strict json format:
                       const SizedBox(height: 15),
                       TextFormField(
                         controller: itemNameController,
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.fact_check),
-                          border: OutlineInputBorder(),
-                          labelText: 'Item Name',
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.fact_check),
+                          border: const OutlineInputBorder(),
+                          labelText: AppLocalizations.of(context)!.itemName,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter an item name';
+                            return AppLocalizations.of(context)!.pleaseEnterItemName;
                           }
                           return null;
                         },
@@ -499,10 +500,10 @@ Strict json format:
                       StatefulBuilder(builder: (context, setState) {
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.category),
-                            border: OutlineInputBorder(),
-                            labelText: 'Category',
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.category),
+                            border: const OutlineInputBorder(),
+                            labelText: AppLocalizations.of(context)!.categoryLabel,
                           ),
                           value: category,
                           items: categories.entries.expand((entry) {
@@ -530,7 +531,7 @@ Strict json format:
                           }).toList(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select a category';
+                              return AppLocalizations.of(context)!.pleaseSelectCategory;
                             }
                             return null;
                           },
@@ -554,7 +555,7 @@ Strict json format:
                                 prefixIcon: const Icon(Icons.money),
                                 border: const OutlineInputBorder(),
                                 labelText:
-                                    'Price ${(currency == null) ? "" : "(${currency!.symbol})"}',
+                                    AppLocalizations.of(context)!.price + ' ${(currency == null) ? "" : "(${currency!.symbol})"}',
                               ),
                               keyboardType:
                                   const TextInputType.numberWithOptions(
@@ -570,13 +571,13 @@ Strict json format:
                               ],
                               validator: (value) {
                                 if (currency == null) {
-                                  return 'Please select the currency';
+                                  return AppLocalizations.of(context)!.pleaseSelectCurrency;
                                 }
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter the price';
+                                  return AppLocalizations.of(context)!.pleaseEnterPrice;
                                 }
                                 if (double.tryParse(value) == null) {
-                                  return 'Please enter valid price';
+                                  return AppLocalizations.of(context)!.pleaseEnterValidPrice;
                                 }
                                 return null;
                               },
@@ -611,7 +612,7 @@ Strict json format:
                                   child: Text(
                                       (currency != null)
                                           ? "${currency?.code} ${currency?.symbol}"
-                                          : "Choose Currency",
+                                          : AppLocalizations.of(context)!.chooseCurrency,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium),
@@ -626,7 +627,7 @@ Strict json format:
                       ),
                       // Add upload toggle before the image selector
                       SwitchListTile(
-                        title: const Text('Upload receipt to Google Drive'),
+                        title: Text(AppLocalizations.of(context)!.uploadReceiptToGoogleDrive),
                         value: uploadToGDrive,
                         onChanged: (bool value) {
                           setState(() {
@@ -641,7 +642,7 @@ Strict json format:
                       ),
                       FilledButton(
                         onPressed: _submitForm,
-                        child: const Text('Submit'),
+                        child: Text(AppLocalizations.of(context)!.submit),
                       ),
                     ],
                   ),
@@ -682,7 +683,7 @@ class _ImageSelectorState extends State<ImageSelector> {
               });
             });
           },
-          child: const Text('Pick the receipt'),
+          child: Text(AppLocalizations.of(context)!.pickTheReceipt),
         ),
         (widget.state != null && widget.state!.hasError)
             ? Text(widget.state!.errorText ?? "Invalid field",
@@ -690,7 +691,7 @@ class _ImageSelectorState extends State<ImageSelector> {
                       color: Theme.of(context).colorScheme.error,
                     ))
             : (bytes == null)
-                ? const Text('No file selected')
+                ? Text(AppLocalizations.of(context)!.noFileSelected)
                 : Column(
                     children: [
                       SizedBox(
@@ -699,7 +700,7 @@ class _ImageSelectorState extends State<ImageSelector> {
                         child: Image.memory(bytes!),
                       ),
                       (filename == null)
-                          ? const Text('No file selected')
+                          ? Text(AppLocalizations.of(context)!.noFileSelected)
                           : Text('filename: $filename'),
                     ],
                   ),

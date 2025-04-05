@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -7,7 +8,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Privacy Policy'),
+        title: Text(AppLocalizations.of(context)!.privacyPolicy),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -18,45 +19,45 @@ class PrivacyPolicyScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Privacy Policy'),
-            _buildParagraph('Last Updated: January 2025'),
+            _buildSectionTitle(AppLocalizations.of(context)!.privacyPolicy),
+            _buildParagraph(AppLocalizations.of(context)!.privacyPolicyLastUpdated),
             
-            _buildSectionTitle('1. Open Source and Non-Profit Mission'),
-            _buildParagraph('This application is an open-source, non-profit project dedicated to empowering users with personal financial tracking and analysis.'),
+            _buildSectionTitle(AppLocalizations.of(context)!.openSourceAndNonProfitMissionTitle),
+            _buildParagraph(AppLocalizations.of(context)!.openSourceAndNonProfitMissionDescription),
             
-            _buildSectionTitle('2. Data Collection and Usage'),
-            _buildParagraph('We do not collect, store, or sell any personal information beyond what is necessary for the app\'s core functionality:'),
-            _buildBulletPoint('Google Sign-In is used solely for authentication and accessing your personal Google Drive and Sheets'),
-            _buildBulletPoint('Financial data is stored exclusively in your personal Google Drive and Sheets'),
-            _buildBulletPoint('All data remains under your complete control and ownership'),
+            _buildSectionTitle(AppLocalizations.of(context)!.dataCollectionAndUsageTitle),
+            _buildParagraph(AppLocalizations.of(context)!.dataCollectionAndUsageDescription),
+            _buildBulletPoint(AppLocalizations.of(context)!.dataCollectionGoogleSignInBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.dataCollectionFinancialDataBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.dataCollectionDataOwnershipBullet),
             
-            _buildSectionTitle('3. Authentication'),
-            _buildParagraph('The app uses Google Sign-In with the following limited scopes:'),
-            _buildBulletPoint('Email verification'),
-            _buildBulletPoint('Google Drive file access'),
+            _buildSectionTitle(AppLocalizations.of(context)!.authenticationTitle),
+            _buildParagraph(AppLocalizations.of(context)!.authenticationDescription),
+            _buildBulletPoint(AppLocalizations.of(context)!.authenticationEmailVerificationBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.authenticationGoogleDriveFileAccessBullet),
             
-            _buildSectionTitle('4. Data Storage'),
-            _buildParagraph('Your financial records are:'),
-            _buildBulletPoint('Stored in a personal Google Spreadsheet'),
-            _buildBulletPoint('Managed through your authenticated Google account'),
-            _buildBulletPoint('Not accessible by the app developers'),
+            _buildSectionTitle(AppLocalizations.of(context)!.dataStorageTitle),
+            _buildParagraph(AppLocalizations.of(context)!.dataStorageDescription),
+            _buildBulletPoint(AppLocalizations.of(context)!.dataStorageGoogleSpreadsheetBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.dataStorageManagedThroughGoogleAccountBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.dataStorageNotAccessibleByDevelopersBullet),
             
-            _buildSectionTitle('5. User Control'),
-            _buildParagraph('You have full control over your data:'),
-            _buildBulletPoint('Revoke app access at any time through Google account settings'),
-            _buildBulletPoint('Delete stored files directly from your Google Drive'),
-            _buildBulletPoint('Opt-out of data storage by not using the app'),
+            _buildSectionTitle(AppLocalizations.of(context)!.userControlTitle),
+            _buildParagraph(AppLocalizations.of(context)!.userControlDescription),
+            _buildBulletPoint(AppLocalizations.of(context)!.userControlRevokeAppAccessBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.userControlDeleteStoredFilesBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.userControlOptOutDataStorageBullet),
             
-            _buildSectionTitle('6. Security'),
-            _buildParagraph('While we implement standard security practices, we recommend:'),
-            _buildBulletPoint('Using strong Google account credentials'),
-            _buildBulletPoint('Regularly reviewing connected applications'),
+            _buildSectionTitle(AppLocalizations.of(context)!.securityTitle),
+            _buildParagraph(AppLocalizations.of(context)!.securityDescription),
+            _buildBulletPoint(AppLocalizations.of(context)!.securityStrongGoogleAccountCredentialsBullet),
+            _buildBulletPoint(AppLocalizations.of(context)!.securityRegularlyReviewConnectedApplicationsBullet),
             
-            _buildSectionTitle('7. Open Source Transparency'),
-            _buildParagraph('Our complete source code is available for public review at our GitHub repository, ensuring full transparency in data handling.'),
+            _buildSectionTitle(AppLocalizations.of(context)!.openSourceTransparencyTitle),
+            _buildParagraph(AppLocalizations.of(context)!.openSourceTransparencyDescription),
             
-            _buildSectionTitle('8. Contact and Feedback'),
-            _buildParagraph('For any privacy-related inquiries or feedback, please open an issue on our GitHub repository.'),
+            _buildSectionTitle(AppLocalizations.of(context)!.contactAndFeedbackTitle),
+            _buildParagraph(AppLocalizations.of(context)!.contactAndFeedbackDescription),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
 import 'package:expense_tracker_web/widgets/dialog_body.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:url_launcher/link.dart';
@@ -18,6 +19,8 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+
+  final List<Locale> _availableLanguages = AppLocalizations.supportedLocales;
 
   @override
   void initState() {
@@ -39,8 +42,8 @@ class _SettingScreenState extends State<SettingScreen>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const LoadingDialogBody(
-        text: 'Action in progress...',
+      builder: (context) => LoadingDialogBody(
+        text: AppLocalizations.of(context)!.actionInProgress,
       ),
     );
 
@@ -63,7 +66,7 @@ class _SettingScreenState extends State<SettingScreen>
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Update $title',
+        title: Text('${AppLocalizations.of(context)!.update} $title',
             style: Theme.of(context).textTheme.titleMedium),
         content: Form(
           key: formKey,
@@ -80,11 +83,11 @@ class _SettingScreenState extends State<SettingScreen>
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a value';
+                    return AppLocalizations.of(context)!.pleaseEnterValue;
                   }
                   final parsedValue = double.tryParse(value);
                   if (parsedValue == null) {
-                    return 'Please enter a valid number';
+                    return AppLocalizations.of(context)!.pleaseEnterValidNumber;
                   }
                   return null;
                 },
@@ -104,7 +107,7 @@ class _SettingScreenState extends State<SettingScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -114,7 +117,7 @@ class _SettingScreenState extends State<SettingScreen>
                 _showActionWaitingDialog(callback: () => onSave(value));
               }
             },
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -138,13 +141,13 @@ class _SettingScreenState extends State<SettingScreen>
           key: formKey,
           child: TextFormField(
             controller: controller,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Enter API Key',
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: AppLocalizations.of(context)!.enterApiKey,
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter a valid API key';
+                return AppLocalizations.of(context)!.pleaseEnterValidApiKey;
               }
               return null;
             },
@@ -154,7 +157,7 @@ class _SettingScreenState extends State<SettingScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -164,7 +167,7 @@ class _SettingScreenState extends State<SettingScreen>
                     callback: () => onSave(controller.text.trim()));
               }
             },
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -185,7 +188,7 @@ class _SettingScreenState extends State<SettingScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select Gemini Model'),
+        title: Text(AppLocalizations.of(context)!.selectGeminiModel),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: models.map((model) {
@@ -207,11 +210,52 @@ class _SettingScreenState extends State<SettingScreen>
     );
   }
 
+  void _showLanguageSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: _availableLanguages.map((locale) {
+            return RadioListTile<Locale>(
+              title: Text(_getLanguageName(locale)),
+              value: locale,
+              groupValue: Localizations.localeOf(context),
+              onChanged: (value) {
+                if (value != null) {
+                  // Update app language
+                  _updateLanguage(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  String _getLanguageName(Locale locale) {
+    switch (locale.languageCode) {
+      case 'en':
+        return 'English';
+      case 'zh':
+        return '中文';
+      default:
+        return locale.languageCode;
+    }
+  }
+
+  void _updateLanguage(Locale locale) {
+    Provider.of<SettingProvider>(context, listen: false).updateLanguage(locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<SettingProvider>(
       builder: (context, settings, child) => CustomScafold(
-        title: 'Settings',
+        title: AppLocalizations.of(context)!.settings,
         leading: (widget.isFirstTime) ? const SizedBox() : null,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -245,7 +289,7 @@ class _SettingScreenState extends State<SettingScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'General'.toUpperCase(),
+              AppLocalizations.of(context)!.general.toUpperCase(),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -256,7 +300,7 @@ class _SettingScreenState extends State<SettingScreen>
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  'You must choose the currency you use for your expenses. Click on this section to set it. You can always change it later.',
+                  AppLocalizations.of(context)!.currencySelectionHint,
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
@@ -266,9 +310,10 @@ class _SettingScreenState extends State<SettingScreen>
               ),
             _buildSettingListTile(
               context,
-              title: 'Currency',
-              subtitle: settings.currency ?? "Not set",
-              description: 'Default currency in calculations and reports',
+              title: AppLocalizations.of(context)!.currency,
+              subtitle:
+                  settings.currency ?? AppLocalizations.of(context)!.notSet,
+              description: AppLocalizations.of(context)!.currencyDescription,
               onTap: () {
                 showCurrencyPicker(
                   context: context,
@@ -285,14 +330,13 @@ class _SettingScreenState extends State<SettingScreen>
             const Divider(),
             _buildSettingListTile(
               context,
-              title: 'Income',
+              title: AppLocalizations.of(context)!.income,
               subtitle: settings.income.toString(),
-              description: '(OPTIONAL) Your monthly income.',
+              description: AppLocalizations.of(context)!.incomeDescription,
               onTap: () => _showNumberInputDialog(
                 context: context,
-                title: 'Income',
-                hintText:
-                    'Your monthly income. It will store on your sheet setting.',
+                title: AppLocalizations.of(context)!.income,
+                hintText: AppLocalizations.of(context)!.incomeHint,
                 currentValue: settings.income,
                 onSave: (value) => settings.updateIncome(value),
               ),
@@ -300,17 +344,24 @@ class _SettingScreenState extends State<SettingScreen>
             const Divider(),
             _buildSettingListTile(
               context,
-              title: 'Regular Cost',
+              title: AppLocalizations.of(context)!.regularCost,
               subtitle: settings.regularCost.toString(),
-              description: '(OPTIONAL) Your monthly cost deducted from your income.',
+              description: AppLocalizations.of(context)!.regularCostDescription,
               onTap: () => _showNumberInputDialog(
                 context: context,
-                title: 'Regular Cost',
-                hintText:
-                    'Your monthly cost that deducted from your income. It will store on your sheet setting, not used anywhere else.',
+                title: AppLocalizations.of(context)!.regularCost,
+                hintText: AppLocalizations.of(context)!.regularCostHint,
                 currentValue: settings.regularCost,
                 onSave: (value) => settings.updateRegularCost(value),
               ),
+            ),
+            const Divider(),
+            _buildSettingListTile(
+              context,
+              title: AppLocalizations.of(context)!.language,
+              subtitle: _getLanguageName(Localizations.localeOf(context)),
+              description: AppLocalizations.of(context)!.languageDescription,
+              onTap: () => _showLanguageSelectionDialog(context),
             ),
           ],
         ),
@@ -328,7 +379,7 @@ class _SettingScreenState extends State<SettingScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'AI Assistance',
+              AppLocalizations.of(context)!.aiAssistance,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -336,15 +387,13 @@ class _SettingScreenState extends State<SettingScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'OPTIONAL: To better use the application, you\'ll need a Gemini API key. '
-              'If you don\'t already have one, '
-              'create a key in Google AI Studio.',
+              AppLocalizations.of(context)!.geminiApiKeyDescription,
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 8),
             Text(
-              'By inputting your Gemini API key, you agree to the terms of service.',
+              AppLocalizations.of(context)!.geminiApiKeyAgreement,
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
@@ -356,19 +405,21 @@ class _SettingScreenState extends State<SettingScreen>
                 builder: (context, followLink) => ElevatedButton.icon(
                   onPressed: followLink,
                   icon: const Icon(Icons.open_in_new),
-                  label: const Text('Get an API Key'),
+                  label: Text(AppLocalizations.of(context)!.getAnApiKey),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             _buildSettingListTile(
               context,
-              title: 'Gemini API Key',
-              subtitle: settings.geminiKey.isEmpty ? 'Not set' : '****',
-              description: 'Configure your Gemini API access',
+              title: AppLocalizations.of(context)!.geminiApiKey,
+              subtitle: settings.geminiKey.isEmpty
+                  ? AppLocalizations.of(context)!.notSet
+                  : '****',
+              description: AppLocalizations.of(context)!.geminiApiKeyConfig,
               onTap: () => _showTextInputDialog(
                 context,
-                'Gemini API Key',
+                AppLocalizations.of(context)!.geminiApiKey,
                 settings.geminiKey,
                 (value) async => (await settings.updateGeminiKey(value)),
               ),
@@ -376,11 +427,11 @@ class _SettingScreenState extends State<SettingScreen>
             const Divider(),
             _buildSettingListTile(
               context,
-              title: 'Gemini Model',
+              title: AppLocalizations.of(context)!.geminiModel,
               subtitle: settings.geminiModel.isEmpty
-                  ? 'Not set'
+                  ? AppLocalizations.of(context)!.notSet
                   : settings.geminiModel,
-              description: 'Select the AI model for assistance',
+              description: AppLocalizations.of(context)!.geminiModelDescription,
               onTap: () => _showModelSelectionDialog(
                 context,
                 settings.geminiModel,
@@ -433,7 +484,7 @@ class _SettingScreenState extends State<SettingScreen>
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Get Started'),
+          child: Text(AppLocalizations.of(context)!.getStarted),
         ),
       ),
     );
@@ -455,7 +506,7 @@ class _SettingScreenState extends State<SettingScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Exchange Rates',
+                AppLocalizations.of(context)!.exchangeRates,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
@@ -463,7 +514,7 @@ class _SettingScreenState extends State<SettingScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                "For every 1 USD, the app will compute based on the exchange rate from Google Finance.  List of available currencies below.",
+                AppLocalizations.of(context)!.exchangeRatesDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Expanded(
@@ -484,10 +535,10 @@ class _SettingScreenState extends State<SettingScreen>
       ..sort((a, b) => a.compareTo(b));
 
     return (sortedCurrencies.isEmpty)
-        ? const Center(
+        ? Center(
             child: Text(
-              'No exchange rates available',
-              style: TextStyle(fontStyle: FontStyle.italic),
+              AppLocalizations.of(context)!.noExchangeRatesAvailable,
+              style: const TextStyle(fontStyle: FontStyle.italic),
             ),
           )
         : Padding(
@@ -547,8 +598,7 @@ class GeminiDisclaimer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Text(
-        'Disclaimer: AI features are optional and require a valid Gemini API key. '
-        'Usage is subject to Google\'s terms of service.',
+        AppLocalizations.of(context)!.geminiDisclaimer,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Theme.of(context).colorScheme.secondary,
               fontStyle: FontStyle.italic,

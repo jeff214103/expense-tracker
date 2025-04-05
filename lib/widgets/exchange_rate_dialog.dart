@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../provider/setting_provider.dart';
 import '../util/currency_service.dart';
@@ -55,7 +56,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
 
   void _convertCurrency() {
     if (_sourceCurrency == null || _targetCurrency == null) {
-      _showErrorSnackBar('Please select both source and target currencies');
+      _showErrorSnackBar(AppLocalizations.of(context)!.currencySelectionError);
       return;
     }
 
@@ -67,7 +68,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
     try {
       final amount = double.tryParse(_amountController.text) ?? 0.0;
       if (amount < 0) {
-        _showErrorSnackBar('Please enter a valid amount');
+        _showErrorSnackBar(AppLocalizations.of(context)!.invalidAmountError);
         setState(() => _isLoading = false);
         return;
       }
@@ -78,7 +79,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
         _isLoading = false;
       });
     } catch (e) {
-      _showErrorSnackBar('Failed to convert currency. Please try again.');
+      _showErrorSnackBar(AppLocalizations.of(context)!.currencyConversionError);
       setState(() => _isLoading = false);
     }
   }
@@ -164,7 +165,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
                       children: [
                         Expanded(
                           child: Text(
-                            'Currency Exchange',
+                            AppLocalizations.of(context)!.currencyExchange,
                             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.primary,
@@ -176,7 +177,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
                         IconButton(
                           icon: const Icon(Icons.close),
                           color: Theme.of(context).colorScheme.error,
-                          tooltip: 'Close',
+                          tooltip: AppLocalizations.of(context)!.close,
                           onPressed: () => Navigator.of(context).pop(),
                         ),
                       ],
@@ -189,7 +190,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
                     _buildConversionResult(),
                     const SizedBox(height: 8),
                     Text(
-                      "Powered by Google Finance",
+                      AppLocalizations.of(context)!.poweredByGoogleFinance,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant),
                       textAlign: TextAlign.center,
@@ -215,15 +216,15 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
       ],
       decoration: InputDecoration(
-        labelText: 'Amount',
+        labelText: AppLocalizations.of(context)!.amount,
         labelStyle: TextStyle(fontSize: isNarrowScreen ? 14 : null),
-        hintText: 'Enter amount to convert',
+        hintText: AppLocalizations.of(context)!.enterAmountToConvert,
         hintStyle: TextStyle(fontSize: isNarrowScreen ? 14 : null),
         prefixIcon: const Icon(Icons.monetization_on_outlined),
         suffixIcon: TextButton(
           onPressed: _selectSourceCurrency,
           child: Text(
-            _sourceCurrency?.code ?? 'Select',
+            _sourceCurrency?.code ?? AppLocalizations.of(context)!.select,
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
               fontSize: isNarrowScreen ? 14 : null,
@@ -251,7 +252,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
             IconButton(
               icon: const Icon(Icons.swap_horiz),
               color: Theme.of(context).colorScheme.secondary,
-              tooltip: 'Swap Currencies',
+              tooltip: AppLocalizations.of(context)!.swapCurrencies,
               onPressed: _swapCurrencies,
               iconSize: isNarrowScreen ? 24 : 32,
             ),
@@ -263,7 +264,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 ),
                 child: Text(
-                  _targetCurrency?.code ?? 'Select Target',
+                  _targetCurrency?.code ?? AppLocalizations.of(context)!.selectTarget,
                   style: TextStyle(fontSize: isNarrowScreen ? 14 : null),
                 ),
                 onPressed: _selectTargetCurrency,
@@ -309,7 +310,7 @@ class _ExchangeRateDialogState extends State<ExchangeRateDialog>
                     child: Column(
                       children: [
                         Text(
-                          'Converted Amount',
+                          AppLocalizations.of(context)!.convertedAmount,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 fontSize: isNarrowScreen ? 14 : null,

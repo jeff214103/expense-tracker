@@ -1,10 +1,9 @@
 import 'package:expense_tracker_web/screen/home.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/link.dart';
-// import 'package:google_sign_in_web/google_sign_in_web.dart' as web;
-// import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
 class GoogleSignInPage extends StatefulWidget {
   const GoogleSignInPage({super.key});
@@ -29,7 +28,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
     }, onError: (error) {
       print('Error during user change: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Authentication error: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.authenticationError(error.toString()))),
       );
     });
   }
@@ -39,7 +38,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Legal Information"),
+        title: Text(AppLocalizations.of(context)!.legalInformation),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -48,7 +47,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
               target: LinkTarget.blank,
               builder: (context, followLink) => ListTile(
                 onTap: followLink,
-                title: const Text("Service Agreement"),
+                title: Text(AppLocalizations.of(context)!.serviceAgreement),
               ),
             ),
             Link(
@@ -56,7 +55,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
               target: LinkTarget.blank,
               builder: (context, followLink) => ListTile(
                 onTap: followLink,
-                title: const Text("Privacy Policy"),
+                title: Text(AppLocalizations.of(context)!.privacyPolicy),
               ),
             ),
           ],
@@ -64,7 +63,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
+            child: Text(AppLocalizations.of(context)!.close),
           )
         ],
       ),
@@ -104,9 +103,9 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          const Text(
-                            'Expense Tracker System',
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!.expenseTrackerSystem,
+                            style: const TextStyle(
                               fontSize: 36,
                             ),
                             textAlign: TextAlign.center,
@@ -115,16 +114,14 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                       ),
                     ),
                     // Add app version text
-                    const Text(
-                      'Version 1.0.8', // Update this to your app's version
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.appVersion,
+                      style: const TextStyle(
                         fontSize: 14, // Reduced font size for better fit
                         color: Colors.black54,
                       ),
                     ),
                     const SizedBox(height: 20), // Add some spacing
-                    // (GoogleSignInPlatform.instance as web.GoogleSignInPlugin)
-                    // .renderButton()
                     OutlinedButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(Colors.white),
@@ -135,23 +132,23 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                         ),
                       ),
                       onPressed: GoogleSignInHelper.signIn,
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Image(
+                            const Image(
                               image:
                                   AssetImage("assets/images/google_logo.png"),
                               height: 35.0,
                             ),
                             Flexible(
                               child: Padding(
-                                padding: EdgeInsets.only(left: 10),
+                                padding: const EdgeInsets.only(left: 10),
                                 child: Text(
-                                  'Sign in with Google',
-                                  style: TextStyle(
+                                  AppLocalizations.of(context)!.signInWithGoogle,
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     color: Colors.black54,
                                     fontWeight: FontWeight.w600,
@@ -173,7 +170,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: IconButton(
-                  tooltip: 'Legal Information',
+                  tooltip: AppLocalizations.of(context)!.legalInformation,
                   onPressed: _showLegalDialog,
                   icon: const Icon(Icons.info),
                 ),

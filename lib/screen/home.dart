@@ -16,6 +16,8 @@ import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/screen/setting.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 void _redirectTo(BuildContext context, Widget widget,
     {void Function(dynamic)? callback}) {
@@ -47,7 +49,8 @@ class _HomePageState extends State<HomePage>
   String? _errorMessage;
 
   Future applicationLoad() {
-     return configureApplication(context).then((_) => CurrencyServiceCustom.updateExchangeRates());
+    return configureApplication(context)
+        .then((_) => CurrencyServiceCustom.updateExchangeRates());
   }
 
   @override
@@ -149,10 +152,10 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return CustomScafold(
-      title: 'Expense Tracker',
+      title: AppLocalizations.of(context)!.expenseTracker,
       actions: [
         IconButton(
-          tooltip: 'Help',
+          tooltip: AppLocalizations.of(context)!.help,
           onPressed: () {
             _redirectTo(
               context,
@@ -162,7 +165,7 @@ class _HomePageState extends State<HomePage>
           icon: const Icon(Icons.help),
         ),
         IconButton(
-          tooltip: 'Logout',
+          tooltip: AppLocalizations.of(context)!.logout,
           onPressed: () async {
             // Sign out the user
             GoogleSignInHelper.signOut().then((GoogleSignInAccount? account) {
@@ -238,7 +241,7 @@ class _HomePageState extends State<HomePage>
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 30),
                             title: Text(
-                              'Hello ${widget.account.displayName}!',
+                              '${AppLocalizations.of(context)!.hello} ${widget.account.displayName}!',
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineSmall
@@ -249,7 +252,7 @@ class _HomePageState extends State<HomePage>
                                   ),
                             ),
                             subtitle: Text(
-                              'Welcome back',
+                              AppLocalizations.of(context)!.welcomeBack,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -361,7 +364,7 @@ class DashboardLayout extends StatelessWidget {
             mainAxisSpacing: isSmallScreen ? 16 : 30,
             children: [
               Dashboarditem(
-                title: 'ADD',
+                title: AppLocalizations.of(context)!.add,
                 iconData: Icons.money,
                 background: Colors.deepOrange,
                 onTap: () {
@@ -372,7 +375,7 @@ class DashboardLayout extends StatelessWidget {
                 },
               ),
               Dashboarditem(
-                title: 'VIEW',
+                title: AppLocalizations.of(context)!.view,
                 iconData: Icons.list,
                 background: Colors.blue,
                 onTap: () {
@@ -383,7 +386,7 @@ class DashboardLayout extends StatelessWidget {
                 },
               ),
               Dashboarditem(
-                title: 'SETTING',
+                title: AppLocalizations.of(context)!.setting,
                 iconData: Icons.settings,
                 background: Colors.green,
                 onTap: () {
@@ -394,7 +397,7 @@ class DashboardLayout extends StatelessWidget {
                 },
               ),
               Dashboarditem(
-                title: 'EXCHANGE RATE',
+                title: AppLocalizations.of(context)!.exchangeRate,
                 iconData: Icons.currency_exchange,
                 background: Colors.yellow.shade600,
                 onTap: () {
@@ -509,7 +512,8 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
 
     final now = DateTime.now();
     final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
-    final percentageConsumed = (currentTotal ?? 0.0) / (setting.income - setting.regularCost);
+    final percentageConsumed =
+        (currentTotal ?? 0.0) / (setting.income - setting.regularCost);
     final remainingDays = daysInMonth - now.day + 1;
     final double dailyBudget =
         remainingDays > 0 ? currentRemain / remainingDays : 0;
@@ -549,7 +553,7 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
                   children: [
                     Flexible(
                       child: Text(
-                        'Monthly Summary',
+                        AppLocalizations.of(context)!.monthlySummary,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
@@ -578,7 +582,7 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
     final isSmallScreen = screenWidth < 600;
 
     final spendingPercentageText = (stats['currentRemain']! < 0)
-        ? 'Overspending'
+        ? AppLocalizations.of(context)!.overspending
         : '${(stats['currentPercentage']! * 100).toStringAsFixed(2)}% of monthly usable';
 
     return Flex(
@@ -590,7 +594,7 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
       children: [
         Flexible(
           child: _SummaryItem(
-            title: 'Spending',
+            title: AppLocalizations.of(context)!.spending,
             value: CurrencyServiceCustom.formatCurrency(
               stats['currentTotal'] ?? 0,
               selectedCurrency ?? "USD",
@@ -601,13 +605,13 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
         SizedBox(width: isSmallScreen ? 0 : 16, height: isSmallScreen ? 16 : 0),
         Flexible(
           child: _SummaryItem(
-            title: 'Remaining',
+            title: AppLocalizations.of(context)!.remaining,
             value: CurrencyServiceCustom.formatCurrency(
               stats['currentRemain']!,
               selectedCurrency ?? "USD",
             ),
             subtitle: (stats['currentRemain']! < 0)
-                ? 'Over consumed'
+                ? AppLocalizations.of(context)!.overConsumed
                 : '${CurrencyServiceCustom.formatCurrency(stats['dailyBudget']!, selectedCurrency ?? "USD")} left per day',
           ),
         ),

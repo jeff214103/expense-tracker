@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceAgreementScreen extends StatelessWidget {
   const ServiceAgreementScreen({super.key});
@@ -7,7 +8,7 @@ class ServiceAgreementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Service Agreement'),
+        title: Text(AppLocalizations.of(context)!.serviceAgreement),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -18,64 +19,53 @@ class ServiceAgreementScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Service Agreement'),
-            _buildParagraph('Last Updated: January 2025'),
+            _buildSectionTitle(AppLocalizations.of(context)!.serviceAgreement),
+            _buildParagraph(AppLocalizations.of(context)!.serviceAgreementLastUpdated),
 
-            _buildSectionTitle('1. Acceptance of Terms'),
+            _buildSectionTitle(AppLocalizations.of(context)!.acceptanceOfTermsTitle),
             _buildParagraph(
-              'By accessing and using the Expense Tracker System, you agree to be bound by this Service Agreement. '
-              'If you do not agree with any part of these terms, please refrain from using our services.',
+              AppLocalizations.of(context)!.acceptanceOfTermsDescription,
             ),
 
-            _buildSectionTitle('2. Services Provided'),
+            _buildSectionTitle(AppLocalizations.of(context)!.servicesProvidedTitle),
             _buildParagraph(
-              'Our Expense Tracker System provides a secure and efficient way to manage your financial information. '
-              'Key features include:',
+              AppLocalizations.of(context)!.servicesProvidedDescription,
             ),
-            _buildBulletPoint('Secure authentication using Google Sign-In.'),
-            _buildBulletPoint('Data storage in your personal Google Drive and management via Google Sheets.'),
-            _buildBulletPoint('Real-time tracking and analysis of your expenses.'),
+            _buildBulletPoint(AppLocalizations.of(context)!.servicesProvidedSecureAuthentication),
+            _buildBulletPoint(AppLocalizations.of(context)!.servicesProvidedDataStorage),
+            _buildBulletPoint(AppLocalizations.of(context)!.servicesProvidedRealTimeTracking),
             _buildParagraph(
-              'Services are provided on an "as is" basis without any express or implied warranties.',
-            ),
-
-            _buildSectionTitle('3. User Responsibilities'),
-            _buildParagraph(
-              'Users are responsible for ensuring that all account information is accurate and up-to-date. '
-              'You must maintain the confidentiality of your account credentials and abide by all applicable laws.',
+              AppLocalizations.of(context)!.servicesProvidedDisclaimer,
             ),
 
-            _buildSectionTitle('4. Account Security and Data Privacy'),
+            _buildSectionTitle(AppLocalizations.of(context)!.userResponsibilitiesTitle),
             _buildParagraph(
-              'We employ Google Sign-In for secure authentication. Your financial data remains under your control '
-              'and is securely stored within your Google services. It is your responsibility to keep your login details confidential.',
+              AppLocalizations.of(context)!.userResponsibilitiesDescription,
             ),
 
-            _buildSectionTitle('5. Intellectual Property Rights'),
+            _buildSectionTitle(AppLocalizations.of(context)!.accountSecurityAndDataPrivacyTitle),
             _buildParagraph(
-              'All content, features, and functionalities related to the Expense Tracker System— '
-              'including software, design, text, and graphics—are the intellectual property of the developers. '
-              'Unauthorized use, reproduction, or distribution is strictly prohibited.',
+              AppLocalizations.of(context)!.accountSecurityAndDataPrivacyDescription,
             ),
 
-            _buildSectionTitle('6. Limitation of Liability'),
+            _buildSectionTitle(AppLocalizations.of(context)!.intellectualPropertyRightsTitle),
             _buildParagraph(
-              'To the fullest extent permitted by law, neither the developers nor any affiliated parties shall be liable '
-              'for any indirect, incidental, or consequential damages arising from the use of the Expense Tracker System. '
-              'Your use of the service is at your own risk.',
+              AppLocalizations.of(context)!.intellectualPropertyRightsDescription,
             ),
 
-            _buildSectionTitle('7. Changes to the Agreement'),
+            _buildSectionTitle(AppLocalizations.of(context)!.limitationOfLiabilityTitle),
             _buildParagraph(
-              'We reserve the right to modify or update this Service Agreement at any time. '
-              'It is your responsibility to review these terms periodically. Continued use of the service constitutes '
-              'acceptance of any changes made to the agreement.',
+              AppLocalizations.of(context)!.limitationOfLiabilityDescription,
             ),
 
-            _buildSectionTitle('8. Contact and Support'),
+            _buildSectionTitle(AppLocalizations.of(context)!.changesToTheAgreementTitle),
             _buildParagraph(
-              'For any questions or concerns regarding this Service Agreement, please contact our support team or reach out '
-              'via our GitHub repository.',
+              AppLocalizations.of(context)!.changesToTheAgreementDescription,
+            ),
+
+            _buildSectionTitle(AppLocalizations.of(context)!.contactAndSupportTitle),
+            _buildParagraph(
+              AppLocalizations.of(context)!.contactAndSupportDescription,
             ),
           ],
         ),
