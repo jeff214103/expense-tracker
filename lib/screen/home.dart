@@ -502,17 +502,24 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
       });
     }
 
-    final double? currentTotal = calculateTotal(currentMonthData);
-    final currentRemain = CurrencyServiceCustom.convert(
-            setting.income, setting.currency ?? "USD", selectedCurrency!) -
-        CurrencyServiceCustom.convert(
-            setting.regularCost, setting.currency ?? "USD", selectedCurrency!) -
-        (currentTotal ?? 0.0);
+    final double currentTotal = calculateTotal(currentMonthData) ?? 0.0;
+    final double currencyIncome = CurrencyServiceCustom.convert(
+      setting.income,
+      setting.currency ?? "USD",
+      selectedCurrency!,
+    );
+    final double currencyRegularCost = CurrencyServiceCustom.convert(
+      setting.regularCost,
+      setting.currency ?? "USD",
+      selectedCurrency!,
+    );
+
+    final currentRemain = currencyIncome - currencyRegularCost;
 
     final now = DateTime.now();
     final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
     final percentageConsumed =
-        (currentTotal ?? 0.0) / (setting.income - setting.regularCost);
+        (currentTotal) / (currencyIncome - currencyRegularCost);
     final remainingDays = daysInMonth - now.day + 1;
     final double dailyBudget =
         remainingDays > 0 ? currentRemain / remainingDays : 0;
@@ -582,8 +589,8 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
 
     final spendingPercentageText = (stats['currentRemain']! < 0)
         ? AppLocalizations.of(context)!.overspending
-        : AppLocalizations.of(context)!
-            .monthlyUsable((stats['currentPercentage']! * 100).toStringAsFixed(2));
+        : AppLocalizations.of(context)!.monthlyUsable(
+            (stats['currentPercentage']! * 100).toStringAsFixed(2));
 
     return Flex(
       direction: isSmallScreen ? Axis.vertical : Axis.horizontal,
