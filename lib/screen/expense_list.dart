@@ -380,6 +380,7 @@ class _ExpenseListState extends State<ExpenseList>
                 (expense) => expense.category.startsWith(_selectedCategory!))
             .toList()
         : expenseData;
+    filteredExpenses?.sort((a, b) => a.invoiceDate.compareTo(b.invoiceDate));
 
     return Card(
       elevation: 4,
