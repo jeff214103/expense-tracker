@@ -18,6 +18,7 @@ import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:provider/provider.dart';
 import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:expense_tracker_web/l10n/app_localizations_extension.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -42,7 +43,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   String? submitDate;
   DateTime? receiptDate = DateTime.now();
   Uint8List? receiptImage;
-  bool uploadToGDrive = true;
+  bool uploadToGDrive = false;
   bool isProcessingGemini = false;
   String? geminiError;
 
@@ -511,7 +512,7 @@ Strict json format:
                               DropdownMenuItem<String>(
                                 enabled: false,
                                 child: Text(
-                                  entry.key,
+                                  AppLocalizations.of(context)!.getCategoryLocalization(entry.key),
                                   style: const TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.bold,
@@ -522,9 +523,10 @@ Strict json format:
                                   .map((subCategory) => DropdownMenuItem(
                                         value: subCategory,
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 16.0),
-                                          child: Text(subCategory),
+                                          padding: const EdgeInsets.only(left: 16.0),
+                                          child: Text(
+                                            AppLocalizations.of(context)!.getCategorySubcategoryLocalization(entry.key, subCategory),
+                                          ),
                                         ),
                                       )),
                             ];

@@ -1,8 +1,10 @@
+import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:expense_tracker_web/screen/home.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/link.dart';
 
 class GoogleSignInPage extends StatefulWidget {
@@ -27,9 +29,6 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
           (Route<dynamic> route) => false);
     }, onError: (error) {
       print('Error during user change: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.authenticationError(error.toString()))),
-      );
     });
   }
 
@@ -38,10 +37,16 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.legalInformation),
+        title: Text(AppLocalizations.of(context)!.appInformation),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.language),
+              label: Text(AppLocalizations.of(context)!.selectLanguage),
+              onPressed: () => _showLanguageSelectionDialog(context),
+            ),
+            const SizedBox(height: 10),
             Link(
               uri: Uri.tryParse('/service-agreement'),
               target: LinkTarget.blank,
@@ -68,6 +73,45 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
         ],
       ),
     );
+  }
+
+  void _showLanguageSelectionDialog(BuildContext context) {
+    const availableLanguages = AppLocalizations.supportedLocales;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: availableLanguages.map((locale) {
+            return RadioListTile<Locale>(
+              title: Text(_getLanguageName(locale)),
+              value: locale,
+              groupValue: Localizations.localeOf(context),
+              onChanged: (value) {
+                if (value != null) {
+                  // Update app language
+                  Provider.of<SettingProvider>(context, listen: false)
+                      .updateLanguage(value.languageCode);
+                  Navigator.of(context).pop();
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  String _getLanguageName(Locale locale) {
+    switch (locale.languageCode) {
+      case 'en':
+        return 'English';
+      case 'zh':
+        return '中文';
+      default:
+        return locale.languageCode;
+    }
   }
 
   @override
@@ -147,7 +191,8 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: Text(
-                                  AppLocalizations.of(context)!.signInWithGoogle,
+                                  AppLocalizations.of(context)!
+                                      .signInWithGoogle,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     color: Colors.black54,
@@ -170,7 +215,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: IconButton(
-                  tooltip: AppLocalizations.of(context)!.legalInformation,
+                  tooltip: AppLocalizations.of(context)!.appInformation,
                   onPressed: _showLegalDialog,
                   icon: const Icon(Icons.info),
                 ),

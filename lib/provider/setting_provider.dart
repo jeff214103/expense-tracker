@@ -1,21 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:expense_tracker_web/util/google_sheet.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingProvider with ChangeNotifier {
   SettingProvider() {
     SharedPreferences.getInstance().then((prefs) {
-      String? language = prefs.getString('language');
-      _language = (language == null)
-          ? PlatformDispatcher.instance.locales.first
-          : Locale(language);
-      if (!AppLocalizations.supportedLocales.contains(_language)) {
-        _language = const Locale('en');
-      }
+      _language = prefs.getString('language');
       notifyListeners();
     });
   }
@@ -54,9 +44,9 @@ class SettingProvider with ChangeNotifier {
   double _regularCost = 0.0;
   String _geminiKey = '';
   String _geminiModel = '';
-  bool _uploadToGDrive = true; // default to true
+  bool _uploadToGDrive = false; // default to false
   String? _currencyCalculationSource;
-  Locale _language = PlatformDispatcher.instance.locales.first;
+  String? _language;
 
   String? get currency => _currency;
   double get income => _income;
@@ -65,7 +55,7 @@ class SettingProvider with ChangeNotifier {
   String get geminiModel => _geminiModel;
   bool get uploadToGDrive => _uploadToGDrive;
   String? get currencyCalculationSource => _currencyCalculationSource;
-  Locale get language => _language;
+  String? get language => _language;
 
   Future<void> init() async {
     if (_initialized) {
@@ -184,10 +174,10 @@ class SettingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateLanguage(Locale locale) async {
+  Future<void> updateLanguage(String language) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('language', locale.languageCode);
-    _language = locale;
+    await prefs.setString('language', language);
+    _language = language;
     notifyListeners();
   }
 }

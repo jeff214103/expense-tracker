@@ -248,7 +248,7 @@ class _SettingScreenState extends State<SettingScreen>
   }
 
   void _updateLanguage(Locale locale) {
-    Provider.of<SettingProvider>(context, listen: false).updateLanguage(locale);
+    Provider.of<SettingProvider>(context, listen: false).updateLanguage(locale.languageCode);
   }
 
   @override

@@ -18,7 +18,6 @@ import 'package:provider/provider.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 void _redirectTo(BuildContext context, Widget widget,
     {void Function(dynamic)? callback}) {
   Navigator.of(context)
@@ -583,7 +582,8 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
 
     final spendingPercentageText = (stats['currentRemain']! < 0)
         ? AppLocalizations.of(context)!.overspending
-        : '${(stats['currentPercentage']! * 100).toStringAsFixed(2)}% of monthly usable';
+        : AppLocalizations.of(context)!
+            .monthlyUsable((stats['currentPercentage']! * 100).toStringAsFixed(2));
 
     return Flex(
       direction: isSmallScreen ? Axis.vertical : Axis.horizontal,
@@ -612,7 +612,9 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
             ),
             subtitle: (stats['currentRemain']! < 0)
                 ? AppLocalizations.of(context)!.overConsumed
-                : '${CurrencyServiceCustom.formatCurrency(stats['dailyBudget']!, selectedCurrency ?? "USD")} left per day',
+                : AppLocalizations.of(context)!.monthlyRemain(
+                    CurrencyServiceCustom.formatCurrency(
+                        stats['dailyBudget']!, selectedCurrency ?? "USD")),
           ),
         ),
       ],
