@@ -514,7 +514,7 @@ class _ExpenseSummaryState extends State<ExpenseSummary> {
       selectedCurrency!,
     );
 
-    final currentRemain = currencyIncome - currencyRegularCost;
+    final currentRemain = currencyIncome - currencyRegularCost - currentTotal;
 
     final now = DateTime.now();
     final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
