@@ -188,8 +188,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
 
       showDialog(
         context: context,
-        builder: (context) => const LoadingDialogBody(
-          text: 'Submitting expense form...',
+        builder: (context) => LoadingDialogBody(
+          text: AppLocalizations.of(context)!.submittingExpenseForm,
         ),
       );
 
@@ -213,9 +213,9 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         Navigator.of(context).pop();
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-                builder: (context) => const SuccessScreen(
+                builder: (context) => SuccessScreen(
                     message:
-                        'The expense form has been submitted successfully.')),
+                        AppLocalizations.of(context)!.expenseSubmittedSuccessfully)),
             (Route<dynamic> route) => false);
       }).catchError((error) {
         Navigator.of(context).pop();
@@ -303,6 +303,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   }
 
   String _buildGeminiPrompt() {
+    final todayDate = DateFormat('d MMM y').format(DateTime.now());
     return '''
 Retrieve the following information and return in strict json format without other text. If the information not found, fill with empty string.
 1. Item name (key: "item_name", type: string)  // It could be general item name, or the place is the item bought
@@ -312,6 +313,7 @@ Retrieve the following information and return in strict json format without othe
 3. Price (key: "price", type : number) // The price must be a number.  If there is multiple items, the price must be the total price
 4. Currency Code (key: "currency", type: string) // The currency code must be one of the following [${CurrencyServiceCustom.getAllCurrencies().join(', ')}]. Analyze the currency by the location of the receipt.  If there is no information, return as ${Provider.of<SettingProvider>(context, listen: false).currency}.
 5. Receipt Date (key: "receipt_date", format: d MMM YYYY) // The receipt date must be in the format of "d MMM YYYY"
+Note: Today date is $todayDate, so the receipt date must be today or before today.
 
 Strict json format:
 {
