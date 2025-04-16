@@ -6,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/link.dart';
+ import 'package:firebase_analytics/firebase_analytics.dart';
 
 class GoogleSignInPage extends StatefulWidget {
   const GoogleSignInPage({super.key});
@@ -24,6 +25,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
         return;
       }
       GoogleSignInHelper.setAccount(account);
+       FirebaseAnalytics.instance.logLogin(loginMethod: 'google');
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => HomePage(account: account)),
           (Route<dynamic> route) => false);

@@ -163,7 +163,7 @@
     "actionInProgress": "Action in progress...",
     "geminiDisclaimer": "Disclaimer: AI features are optional and require a valid Gemini API key. Usage is subject to Google's terms of service.",
     "expenseTrackerSystem": "Expense Tracker System",
-    "appVersion": "Version 1.1.1",
+    "appVersion": "Version 1.1.2",
     "signInWithGoogle": "Sign in with Google",
     "appInformation": "App Information",
     "serviceAgreement": "Service Agreement",

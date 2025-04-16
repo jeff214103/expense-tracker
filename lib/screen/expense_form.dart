@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:expense_tracker_web/l10n/app_localizations_extension.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -214,8 +215,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (context) => SuccessScreen(
-                    message:
-                        AppLocalizations.of(context)!.expenseSubmittedSuccessfully)),
+                    message: AppLocalizations.of(context)!
+                        .expenseSubmittedSuccessfully)),
             (Route<dynamic> route) => false);
       }).catchError((error) {
         Navigator.of(context).pop();
@@ -280,6 +281,10 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
           await _getGeminiResponse(mime, imageData, prompt, settings);
 
       if (response?.text == null) {
+        FirebaseAnalytics.instance
+            .logEvent(name: 'receipt_gemini_request', parameters: {
+          'status': "empty",
+        });
         setState(() {
           geminiError = 'Failed to process receipt with AI';
         });
@@ -287,11 +292,19 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       }
 
       final json = jsonDecode(response!.text!);
+      FirebaseAnalytics.instance
+          .logEvent(name: 'receipt_gemini_request', parameters: {
+        'status': "succuss",
+      });
       _updateFormWithGeminiResponse(json);
     } catch (e) {
       if (kDebugMode) {
         print('Error processing with Gemini: $e');
       }
+      FirebaseAnalytics.instance
+          .logEvent(name: 'receipt_gemini_request', parameters: {
+        'status': "failed",
+      });
       setState(() {
         geminiError = 'Error processing receipt: ${e.toString()}';
       });
@@ -423,7 +436,8 @@ Strict json format:
                               const SizedBox(height: 10),
                               const CircularProgressIndicator(),
                               const SizedBox(height: 5),
-                              Text(AppLocalizations.of(context)!.processingReceiptWithAI),
+                              Text(AppLocalizations.of(context)!
+                                  .processingReceiptWithAI),
                             ],
                             if (geminiError != null) ...[
                               const SizedBox(height: 10),
@@ -439,7 +453,8 @@ Strict json format:
                         validator: (value) {
                           if (uploadToGDrive &&
                               (receiptImage == null || receiptImage!.isEmpty)) {
-                            return AppLocalizations.of(context)!.pleaseSelectReceiptImage;
+                            return AppLocalizations.of(context)!
+                                .pleaseSelectReceiptImage;
                           }
                           return null;
                         },
@@ -452,7 +467,8 @@ Strict json format:
                         readOnly: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppLocalizations.of(context)!.pleaseEnterReceiptDate;
+                            return AppLocalizations.of(context)!
+                                .pleaseEnterReceiptDate;
                           }
                           return null;
                         },
@@ -491,7 +507,8 @@ Strict json format:
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppLocalizations.of(context)!.pleaseEnterItemName;
+                            return AppLocalizations.of(context)!
+                                .pleaseEnterItemName;
                           }
                           return null;
                         },
@@ -506,7 +523,8 @@ Strict json format:
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.category),
                             border: const OutlineInputBorder(),
-                            labelText: AppLocalizations.of(context)!.categoryLabel,
+                            labelText:
+                                AppLocalizations.of(context)!.categoryLabel,
                           ),
                           value: category,
                           items: categories.entries.expand((entry) {
@@ -514,7 +532,8 @@ Strict json format:
                               DropdownMenuItem<String>(
                                 enabled: false,
                                 child: Text(
-                                  AppLocalizations.of(context)!.getCategoryLocalization(entry.key),
+                                  AppLocalizations.of(context)!
+                                      .getCategoryLocalization(entry.key),
                                   style: const TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.bold,
@@ -525,9 +544,12 @@ Strict json format:
                                   .map((subCategory) => DropdownMenuItem(
                                         value: subCategory,
                                         child: Padding(
-                                          padding: const EdgeInsets.only(left: 16.0),
+                                          padding:
+                                              const EdgeInsets.only(left: 16.0),
                                           child: Text(
-                                            AppLocalizations.of(context)!.getCategorySubcategoryLocalization(entry.key, subCategory),
+                                            AppLocalizations.of(context)!
+                                                .getCategorySubcategoryLocalization(
+                                                    entry.key, subCategory),
                                           ),
                                         ),
                                       )),
@@ -535,7 +557,8 @@ Strict json format:
                           }).toList(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return AppLocalizations.of(context)!.pleaseSelectCategory;
+                              return AppLocalizations.of(context)!
+                                  .pleaseSelectCategory;
                             }
                             return null;
                           },
@@ -558,8 +581,8 @@ Strict json format:
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.money),
                                 border: const OutlineInputBorder(),
-                                labelText:
-                                    AppLocalizations.of(context)!.price + ' ${(currency == null) ? "" : "(${currency!.symbol})"}',
+                                labelText: AppLocalizations.of(context)!.price +
+                                    ' ${(currency == null) ? "" : "(${currency!.symbol})"}',
                               ),
                               keyboardType:
                                   const TextInputType.numberWithOptions(
@@ -575,13 +598,16 @@ Strict json format:
                               ],
                               validator: (value) {
                                 if (currency == null) {
-                                  return AppLocalizations.of(context)!.pleaseSelectCurrency;
+                                  return AppLocalizations.of(context)!
+                                      .pleaseSelectCurrency;
                                 }
                                 if (value == null || value.isEmpty) {
-                                  return AppLocalizations.of(context)!.pleaseEnterPrice;
+                                  return AppLocalizations.of(context)!
+                                      .pleaseEnterPrice;
                                 }
                                 if (double.tryParse(value) == null) {
-                                  return AppLocalizations.of(context)!.pleaseEnterValidPrice;
+                                  return AppLocalizations.of(context)!
+                                      .pleaseEnterValidPrice;
                                 }
                                 return null;
                               },
@@ -616,7 +642,8 @@ Strict json format:
                                   child: Text(
                                       (currency != null)
                                           ? "${currency?.code} ${currency?.symbol}"
-                                          : AppLocalizations.of(context)!.chooseCurrency,
+                                          : AppLocalizations.of(context)!
+                                              .chooseCurrency,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium),
@@ -631,7 +658,8 @@ Strict json format:
                       ),
                       // Add upload toggle before the image selector
                       SwitchListTile(
-                        title: Text(AppLocalizations.of(context)!.uploadReceiptToGoogleDrive),
+                        title: Text(AppLocalizations.of(context)!
+                            .uploadReceiptToGoogleDrive),
                         value: uploadToGDrive,
                         onChanged: (bool value) {
                           setState(() {
