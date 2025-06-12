@@ -298,6 +298,7 @@
     "category_GiftsDonations_Christmas": "Christmas",
     "category_GiftsDonations_SpecialOccasion": "Special occasion",
     "category_GiftsDonations_Charities": "Charities",
+    "category_GiftsDonations_Souvenir": "Souvenir",
 
     "category_Entertainment": "Entertainment",
     "category_Entertainment_AlcoholBars": "Alcohol and/or bars",
@@ -306,6 +307,7 @@
     "category_Entertainment_Concerts": "Concerts",
     "category_Entertainment_Vacations": "Vacations",
     "category_Entertainment_Subscriptions": "Subscriptions (Netflix, Amazon, Hulu, etc.)",
+    "category_Entertainment_Other": "Other Entertainment",
 
     "category_Debt": "Debt",
     "category_Debt_CreditCard": "Credit card",

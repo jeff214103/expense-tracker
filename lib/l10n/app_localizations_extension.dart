@@ -38,7 +38,8 @@ extension AppLocalizationsExtension on AppLocalizations {
     }
   }
 
-  String getCategorySubcategoryLocalization(String category, String subCategory) {
+  String getCategorySubcategoryLocalization(
+      String category, String subCategory) {
     switch (category) {
       case 'Housing':
         switch (subCategory) {
@@ -237,6 +238,8 @@ extension AppLocalizationsExtension on AppLocalizations {
             return category_GiftsDonations_SpecialOccasion;
           case 'Charities':
             return category_GiftsDonations_Charities;
+          case 'Sourvenir':
+            return category_GiftsDonations_Souvenir;
           default:
             return subCategory;
         }
@@ -254,6 +257,8 @@ extension AppLocalizationsExtension on AppLocalizations {
             return category_Entertainment_Vacations;
           case 'Subscriptions (Netflix, Amazon, Hulu, etc.)':
             return category_Entertainment_Subscriptions;
+          case 'Entertainment':
+            return category_Entertainment_Other;
           default:
             return subCategory;
         }

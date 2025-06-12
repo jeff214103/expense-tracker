@@ -292,14 +292,16 @@
     "category_GiftsDonations_Christmas": "聖誕節",
     "category_GiftsDonations_SpecialOccasion": "特殊場合",
     "category_GiftsDonations_Charities": "慈善捐款",
+    "category_GiftsDonations_Souvenir": "手信",
 
     "category_Entertainment": "娛樂",
     "category_Entertainment_AlcoholBars": "酒精及/或酒吧",
     "category_Entertainment_Games": "遊戲",
     "category_Entertainment_Movies": "電影",
-    "category_Entertainment_Concerts": "音樂會",
+    "category_Entertainment_Concerts": "演唱會/音樂會",
     "category_Entertainment_Vacations": "度假",
     "category_Entertainment_Subscriptions": "訂閱服務 (Netflix, Amazon, Hulu 等)",
+    "category_Entertainment_Other": "其他娛樂",
 
     "category_Debt": "債務",
     "category_Debt_CreditCard": "信用卡",

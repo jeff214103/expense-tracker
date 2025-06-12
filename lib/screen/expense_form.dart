@@ -143,6 +143,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       'Christmas',
       'Special occasion',
       'Charities',
+      'Souvenir',
     ],
     'Entertainment': [
       'Alcohol and/or bars',
@@ -151,6 +152,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       'Concerts',
       'Vacations',
       'Subscriptions (Netflix, Amazon, Hulu, etc.)',
+      'Entertainment',
     ],
     'Debt': [
       'Credit card',
