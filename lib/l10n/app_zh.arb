@@ -161,7 +161,7 @@
     "actionInProgress": "操作進行中...",
     "geminiDisclaimer": "免責聲明：AI 功能為選用，且需要有效的 Gemini API 金鑰。使用受 Google 服務條款約束。",
     "expenseTrackerSystem": "開銷追蹤系統",
-    "appVersion": "版本 1.1.2",
+    "appVersion": "版本 1.1.3",
     "signInWithGoogle": "使用 Google 登入",
     "appInformation": "程式資訊",
     "authenticationError": "驗證錯誤：{error}",
@@ -310,5 +310,8 @@
     "category_Debt_OtherDebtPayments": "其他債務還款",
 
     "category_Other": "其他",
-    "category_Other_OtherExpenses": "其他開支"
+    "category_Other_OtherExpenses": "其他開支",
+
+    "notSignedIn": "未登入",
+    "sessionTimeout": "連線超時"
 }

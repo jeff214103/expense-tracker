@@ -163,7 +163,7 @@
     "actionInProgress": "Action in progress...",
     "geminiDisclaimer": "Disclaimer: AI features are optional and require a valid Gemini API key. Usage is subject to Google's terms of service.",
     "expenseTrackerSystem": "Expense Tracker System",
-    "appVersion": "Version 1.1.2",
+    "appVersion": "Version 1.1.3",
     "signInWithGoogle": "Sign in with Google",
     "appInformation": "App Information",
     "serviceAgreement": "Service Agreement",
@@ -316,5 +316,8 @@
     "category_Debt_OtherDebtPayments": "Other debt payments",
 
     "category_Other": "Other",
-    "category_Other_OtherExpenses": "Other expenses"
+    "category_Other_OtherExpenses": "Other expenses",
+
+    "notSignedIn": "You are not signed in",
+    "sessionTimeout": "Session timeout"
 }
