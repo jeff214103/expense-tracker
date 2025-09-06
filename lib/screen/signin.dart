@@ -2,7 +2,7 @@ import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:expense_tracker_web/screen/home.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:expense_tracker_web/l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/link.dart';

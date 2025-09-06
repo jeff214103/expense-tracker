@@ -25,8 +25,8 @@ class SettingProvider with ChangeNotifier {
     _geminiModelKey,
   ];
   static const List<String> _availableModels = [
-    'gemini-1.5-flash',
     'gemini-2.0-flash',
+    'gemini-2.5-flash',
   ];
 
   List<String> get availableModels => _availableModels;

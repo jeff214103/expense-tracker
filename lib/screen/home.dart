@@ -16,7 +16,7 @@ import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/screen/setting.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:expense_tracker_web/l10n/app_localizations.dart';
 
 void _redirectTo(BuildContext context, Widget widget,
     {void Function(dynamic)? callback}) {

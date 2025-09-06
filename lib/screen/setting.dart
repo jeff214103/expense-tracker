@@ -2,7 +2,7 @@ import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
 import 'package:expense_tracker_web/widgets/dialog_body.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:expense_tracker_web/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:url_launcher/link.dart';
@@ -189,22 +189,22 @@ class _SettingScreenState extends State<SettingScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.selectGeminiModel),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: models.map((model) {
-            return RadioListTile<String>(
+        content: RadioGroup<String>(
+          groupValue: currentModel,
+          onChanged: (value) {
+            if (value != null) {
+              Navigator.of(context).pop();
+              _showActionWaitingDialog(callback: () => onModelSelect(value));
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+              children: models.map((model) {
+            return ListTile(
               title: Text(model),
-              value: model,
-              groupValue: currentModel,
-              onChanged: (value) {
-                if (value != null) {
-                  Navigator.of(context).pop();
-                  _showActionWaitingDialog(
-                      callback: () => onModelSelect(value));
-                }
-              },
+              leading: Radio<String>(toggleable: true, value: model),
             );
-          }).toList(),
+          }).toList()),
         ),
       ),
     );
@@ -248,7 +248,8 @@ class _SettingScreenState extends State<SettingScreen>
   }
 
   void _updateLanguage(Locale locale) {
-    Provider.of<SettingProvider>(context, listen: false).updateLanguage(locale.languageCode);
+    Provider.of<SettingProvider>(context, listen: false)
+        .updateLanguage(locale.languageCode);
   }
 
   @override
@@ -332,11 +333,13 @@ class _SettingScreenState extends State<SettingScreen>
               context,
               title: AppLocalizations.of(context)!.income,
               subtitle: settings.income.toString(),
-              description: AppLocalizations.of(context)!.incomeDescription(settings.currency ?? AppLocalizations.of(context)!.notSet),
+              description: AppLocalizations.of(context)!.incomeDescription(
+                  settings.currency ?? AppLocalizations.of(context)!.notSet),
               onTap: () => _showNumberInputDialog(
                 context: context,
                 title: AppLocalizations.of(context)!.income,
-                hintText: AppLocalizations.of(context)!.incomeHint(settings.currency ?? AppLocalizations.of(context)!.notSet),
+                hintText: AppLocalizations.of(context)!.incomeHint(
+                    settings.currency ?? AppLocalizations.of(context)!.notSet),
                 currentValue: settings.income,
                 onSave: (value) => settings.updateIncome(value),
               ),
@@ -346,11 +349,13 @@ class _SettingScreenState extends State<SettingScreen>
               context,
               title: AppLocalizations.of(context)!.regularCost,
               subtitle: settings.regularCost.toString(),
-              description: AppLocalizations.of(context)!.regularCostDescription(settings.currency ?? AppLocalizations.of(context)!.notSet),
+              description: AppLocalizations.of(context)!.regularCostDescription(
+                  settings.currency ?? AppLocalizations.of(context)!.notSet),
               onTap: () => _showNumberInputDialog(
                 context: context,
                 title: AppLocalizations.of(context)!.regularCost,
-                hintText: AppLocalizations.of(context)!.regularCostHint(settings.currency ?? AppLocalizations.of(context)!.notSet),
+                hintText: AppLocalizations.of(context)!.regularCostHint(
+                    settings.currency ?? AppLocalizations.of(context)!.notSet),
                 currentValue: settings.regularCost,
                 onSave: (value) => settings.updateRegularCost(value),
               ),
@@ -398,33 +403,33 @@ class _SettingScreenState extends State<SettingScreen>
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            Center(
-              child: Link(
-                uri: Uri.https('makersuite.google.com', '/app/apikey'),
-                target: LinkTarget.blank,
-                builder: (context, followLink) => ElevatedButton.icon(
-                  onPressed: followLink,
-                  icon: const Icon(Icons.open_in_new),
-                  label: Text(AppLocalizations.of(context)!.getAnApiKey),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildSettingListTile(
-              context,
-              title: AppLocalizations.of(context)!.geminiApiKey,
-              subtitle: settings.geminiKey.isEmpty
-                  ? AppLocalizations.of(context)!.notSet
-                  : '****',
-              description: AppLocalizations.of(context)!.geminiApiKeyConfig,
-              onTap: () => _showTextInputDialog(
-                context,
-                AppLocalizations.of(context)!.geminiApiKey,
-                settings.geminiKey,
-                (value) async => (await settings.updateGeminiKey(value)),
-              ),
-            ),
-            const Divider(),
+            // Center(
+            //   child: Link(
+            //     uri: Uri.https('makersuite.google.com', '/app/apikey'),
+            //     target: LinkTarget.blank,
+            //     builder: (context, followLink) => ElevatedButton.icon(
+            //       onPressed: followLink,
+            //       icon: const Icon(Icons.open_in_new),
+            //       label: Text(AppLocalizations.of(context)!.getAnApiKey),
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(height: 16),
+            // _buildSettingListTile(
+            //   context,
+            //   title: AppLocalizations.of(context)!.geminiApiKey,
+            //   subtitle: settings.geminiKey.isEmpty
+            //       ? AppLocalizations.of(context)!.notSet
+            //       : '****',
+            //   description: AppLocalizations.of(context)!.geminiApiKeyConfig,
+            //   onTap: () => _showTextInputDialog(
+            //     context,
+            //     AppLocalizations.of(context)!.geminiApiKey,
+            //     settings.geminiKey,
+            //     (value) async => (await settings.updateGeminiKey(value)),
+            //   ),
+            // ),
+            // const Divider(),
             _buildSettingListTile(
               context,
               title: AppLocalizations.of(context)!.geminiModel,

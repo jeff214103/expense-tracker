@@ -4,7 +4,7 @@ import 'package:expense_tracker_web/screen/signin.dart';
 import 'package:expense_tracker_web/util/google_sign_in.dart';
 import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:expense_tracker_web/l10n/app_localizations.dart';
 
 class CustomScafold extends StatefulWidget {
   const CustomScafold({

@@ -4,7 +4,7 @@ import 'package:expense_tracker_web/provider/setting_provider.dart';
 import 'package:expense_tracker_web/util/google_drive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:expense_tracker_web/l10n/app_localizations.dart';
 import 'package:expense_tracker_web/util/google_sheet.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
 import 'package:expense_tracker_web/util/currency_service.dart';

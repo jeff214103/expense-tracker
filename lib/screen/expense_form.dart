@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:currency_picker/currency_picker.dart';
 import 'package:expense_tracker_web/util/currency_service.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:mime/mime.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -17,9 +18,9 @@ import 'package:expense_tracker_web/widgets/dialog_body.dart';
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:provider/provider.dart';
 import 'package:expense_tracker_web/provider/setting_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:expense_tracker_web/l10n/app_localizations.dart';
 import 'package:expense_tracker_web/l10n/app_localizations_extension.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:expense_tracker_web/util/gemini_helper.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -343,12 +344,11 @@ Strict json format:
 
   Future<GenerateContentResponse?> _getGeminiResponse(String mime,
       Uint8List imageData, String prompt, SettingProvider settings) {
-    final dataPart = DataPart(mime, imageData);
+    final dataPart = InlineDataPart(mime, imageData);
     final parts = [TextPart(prompt), dataPart];
 
-    final model = GenerativeModel(
+    final model = getFirebaseAI().generativeModel(
         model: settings.geminiModel,
-        apiKey: settings.geminiKey,
         generationConfig:
             GenerationConfig(responseMimeType: 'application/json'));
 
