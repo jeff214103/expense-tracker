@@ -1073,7 +1073,7 @@ abstract class AppLocalizations {
   /// No description provided for @appVersion.
   ///
   /// In en, this message translates to:
-  /// **'Version 1.1.4'**
+  /// **'Version 1.1.5'**
   String get appVersion;
 
   /// No description provided for @signInWithGoogle.
@@ -1291,6 +1291,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Language'**
   String get selectLanguage;
+
+  /// No description provided for @incomeFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Income Format'**
+  String get incomeFormat;
+
+  /// No description provided for @incomeFormatDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Select how you want to input your income'**
+  String get incomeFormatDescription;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @hourly.
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly'**
+  String get hourly;
+
+  /// No description provided for @biWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Bi-weekly'**
+  String get biWeekly;
+
+  /// No description provided for @yearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get yearly;
+
+  /// No description provided for @hoursPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours per week'**
+  String get hoursPerWeek;
+
+  /// No description provided for @enterHoursPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter hours per week'**
+  String get enterHoursPerWeek;
+
+  /// No description provided for @pleaseEnterHoursPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter hours per week'**
+  String get pleaseEnterHoursPerWeek;
+
+  /// No description provided for @pleaseEnterValidHoursPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter valid hours per week (1-168)'**
+  String get pleaseEnterValidHoursPerWeek;
+
+  /// No description provided for @monthlyIncomeConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Income Confirmation'**
+  String get monthlyIncomeConfirmation;
+
+  /// No description provided for @convertedMonthlyIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted Monthly Income'**
+  String get convertedMonthlyIncome;
+
+  /// No description provided for @confirmMonthlyIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Monthly Income'**
+  String get confirmMonthlyIncome;
+
+  /// No description provided for @incomeConversionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your input, your monthly income would be:'**
+  String get incomeConversionNote;
 
   /// No description provided for @category_Housing.
   ///

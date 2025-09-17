@@ -541,7 +541,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get expenseTrackerSystem => '開銷追蹤系統';
 
   @override
-  String get appVersion => '版本 1.1.4';
+  String get appVersion => '版本 1.1.5';
 
   @override
   String get signInWithGoogle => '使用 Google 登入';
@@ -705,6 +705,48 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get selectLanguage => '選擇語言';
+
+  @override
+  String get incomeFormat => '收入格式';
+
+  @override
+  String get incomeFormatDescription => '選擇您想要輸入收入的方式';
+
+  @override
+  String get monthly => '每月';
+
+  @override
+  String get hourly => '每小時';
+
+  @override
+  String get biWeekly => '每兩週';
+
+  @override
+  String get yearly => '每年';
+
+  @override
+  String get hoursPerWeek => '每週工作時數';
+
+  @override
+  String get enterHoursPerWeek => '輸入每週工作時數';
+
+  @override
+  String get pleaseEnterHoursPerWeek => '請輸入每週工作時數';
+
+  @override
+  String get pleaseEnterValidHoursPerWeek => '請輸入有效的每週工作時數 (1-168)';
+
+  @override
+  String get monthlyIncomeConfirmation => '每月收入確認';
+
+  @override
+  String get convertedMonthlyIncome => '轉換後的每月收入';
+
+  @override
+  String get confirmMonthlyIncome => '確認每月收入';
+
+  @override
+  String get incomeConversionNote => '根據您的輸入，您的每月收入將為：';
 
   @override
   String get category_Housing => '房屋';

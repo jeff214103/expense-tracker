@@ -564,7 +564,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expenseTrackerSystem => 'Expense Tracker System';
 
   @override
-  String get appVersion => 'Version 1.1.4';
+  String get appVersion => 'Version 1.1.5';
 
   @override
   String get signInWithGoogle => 'Sign in with Google';
@@ -733,6 +733,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectLanguage => 'Select Language';
+
+  @override
+  String get incomeFormat => 'Income Format';
+
+  @override
+  String get incomeFormatDescription =>
+      'Select how you want to input your income';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get hourly => 'Hourly';
+
+  @override
+  String get biWeekly => 'Bi-weekly';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String get hoursPerWeek => 'Hours per week';
+
+  @override
+  String get enterHoursPerWeek => 'Enter hours per week';
+
+  @override
+  String get pleaseEnterHoursPerWeek => 'Please enter hours per week';
+
+  @override
+  String get pleaseEnterValidHoursPerWeek =>
+      'Please enter valid hours per week (1-168)';
+
+  @override
+  String get monthlyIncomeConfirmation => 'Monthly Income Confirmation';
+
+  @override
+  String get convertedMonthlyIncome => 'Converted Monthly Income';
+
+  @override
+  String get confirmMonthlyIncome => 'Confirm Monthly Income';
+
+  @override
+  String get incomeConversionNote =>
+      'Based on your input, your monthly income would be:';
 
   @override
   String get category_Housing => 'Housing';

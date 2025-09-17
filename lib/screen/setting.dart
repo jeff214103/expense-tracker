@@ -1,11 +1,11 @@
 import 'package:expense_tracker_web/util/currency_service.dart';
 import 'package:expense_tracker_web/widgets/custom_scafold.dart';
 import 'package:expense_tracker_web/widgets/dialog_body.dart';
+import 'package:expense_tracker_web/widgets/income_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker_web/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_picker/currency_picker.dart';
-import 'package:url_launcher/link.dart';
 import 'package:expense_tracker_web/provider/setting_provider.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -124,55 +124,6 @@ class _SettingScreenState extends State<SettingScreen>
     );
   }
 
-  Future<void> _showTextInputDialog(
-    BuildContext context,
-    String title,
-    String currentValue,
-    Function(String) onSave,
-  ) async {
-    final controller = TextEditingController(text: currentValue);
-    final formKey = GlobalKey<FormState>();
-
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title, style: Theme.of(context).textTheme.titleMedium),
-        content: Form(
-          key: formKey,
-          child: TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: AppLocalizations.of(context)!.enterApiKey,
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return AppLocalizations.of(context)!.pleaseEnterValidApiKey;
-              }
-              return null;
-            },
-            obscureText: true,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(AppLocalizations.of(context)!.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(context).pop();
-                _showActionWaitingDialog(
-                    callback: () => onSave(controller.text.trim()));
-              }
-            },
-            child: Text(AppLocalizations.of(context)!.save),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showModelSelectionDialog(
     BuildContext context,
@@ -250,6 +201,22 @@ class _SettingScreenState extends State<SettingScreen>
   void _updateLanguage(Locale locale) {
     Provider.of<SettingProvider>(context, listen: false)
         .updateLanguage(locale.languageCode);
+  }
+
+  Future<void> _showIncomeInputDialog({
+    required BuildContext context,
+    required double currentValue,
+    required String currency,
+    required Function(double) onSave,
+  }) async {
+    return showDialog(
+      context: context,
+      builder: (context) => IncomeInputDialog(
+        currentValue: currentValue,
+        currency: currency,
+        onSave: (value) => _showActionWaitingDialog(callback: () => onSave(value)),
+      ),
+    );
   }
 
   @override
@@ -335,12 +302,10 @@ class _SettingScreenState extends State<SettingScreen>
               subtitle: settings.income.toString(),
               description: AppLocalizations.of(context)!.incomeDescription(
                   settings.currency ?? AppLocalizations.of(context)!.notSet),
-              onTap: () => _showNumberInputDialog(
+              onTap: () => _showIncomeInputDialog(
                 context: context,
-                title: AppLocalizations.of(context)!.income,
-                hintText: AppLocalizations.of(context)!.incomeHint(
-                    settings.currency ?? AppLocalizations.of(context)!.notSet),
                 currentValue: settings.income,
+                currency: settings.currency ?? AppLocalizations.of(context)!.notSet,
                 onSave: (value) => settings.updateIncome(value),
               ),
             ),
